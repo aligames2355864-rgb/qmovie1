@@ -7,46 +7,24 @@
 <style>
 /* --- الإعدادات العامة --- */
 body {
-  background-color: #141414;
-  color: #fff;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 0;
-  padding-bottom: 100px; /* مساحة للفوتر */
+  background-color: #141414; color: #fff; font-family: Arial, sans-serif;
+  text-align: center; margin: 0; padding-bottom: 100px;
 }
-a {
-  color: #E50914; /* لون نتفلكس الأحمر للروابط */
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
+a { color: #E50914; text-decoration: none; }
+a:hover { text-decoration: underline; }
+header { padding: 20px; border-bottom: 1px solid #333; }
+header h1 { color: #E50914; margin: 0; font-size: 2.5em; }
 
-/* --- الهيدر (العنوان الرئيسي) --- */
-header {
-  padding: 20px;
-  border-bottom: 1px solid #333;
-}
-header h1 {
-  color: #E50914;
-  margin: 0;
-  font-size: 2.5em; /* كبرت الخط */
-}
-
-/* --- حاوية الفيلم (اللمسة الجديدة) --- */
+/* --- حاوية الفيلم --- */
 .movie-showcase {
-  max-width: 900px; /* يحدد عرض الصفحة */
-  margin: 30px auto; /* يخليها بالنص */
-  background-color: #222;
-  border-radius: 10px; /* حواف ناعمة */
-  overflow: hidden; /* حتى الحواف تضبط على الفيديو */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* شوية ظل */
+  max-width: 900px; margin: 30px auto; background-color: #222;
+  border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
-/* --- مشغل الفيديو --- */
+/* --- مشغل الفيديو (يوتيوب) --- */
 .video-player {
   position: relative;
-  padding-bottom: 56.25%; /* (9 / 16 * 100%) */
+  padding-bottom: 56.25%; /* (نسبة 16:9) */
   height: 0;
   background-color: #000;
 }
@@ -59,106 +37,61 @@ header h1 {
   border: none;
 }
 
-/* --- تفاصيل الفيلم (القصة والأبطال) --- */
-.movie-details {
-  padding: 25px;
-  text-align: right; /* محاذاة لليمين لأن عربي */
-}
-.movie-details h2 {
-  font-size: 2em;
-  color: #fff;
-  margin-top: 0;
-}
-.movie-details p {
-  color: #ddd;
-  font-size: 1.1em;
-  line-height: 1.6; /* تباعد أسطر مريح */
-}
+/* --- تفاصيل الفيلم --- */
+.movie-details { padding: 25px; text-align: right; }
+.movie-details h2 { font-size: 2em; color: #fff; margin-top: 0; }
+.movie-details p { color: #ddd; font-size: 1.1em; line-height: 1.6; }
 .info-section {
-  margin-top: 20px;
-  border-top: 1px solid #444;
-  padding-top: 20px;
+  margin-top: 20px; border-top: 1px solid #444; padding-top: 20px;
 }
-.info-section h3 {
-  color: #aaa;
-  font-size: 1.2em;
-  margin-bottom: 10px;
-}
+.info-section h3 { color: #aaa; font-size: 1.2em; margin-bottom: 10px; }
 .info-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 15px; /* مسافة بين الأسماء */
+  list-style: none; padding: 0; margin: 0; display: flex; gap: 15px;
 }
 .info-section ul li {
-  background-color: #333;
-  padding: 5px 10px;
-  border-radius: 4px;
+  background-color: #333; padding: 5px 10px; border-radius: 4px;
 }
-
-/* --- الفوتر (الحقوق) --- */
-footer {
-  margin-top: 40px;
-  padding: 20px;
-  color: #aaa;
-  font-size: 14px;
-}
+footer { margin-top: 40px; padding: 20px; color: #aaa; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🎬 Q Movie</h1>
-</header>
-
-
+<header> <h1>🎬 Q Movie</h1> </header>
 <main>
   <div class="movie-showcase">
     
     <div class="video-player">
-      <iframe src="https://drive.google.com/file/d/1WNheb3CRBO_yTfSozDsQcLmH26QeVsZm/preview" 
-              allowfullscreen="true" 
-              allow="fullscreen">
+      <iframe src="https://www.youtube.com/embed/fg_3ucRtN6Y" 
+              title="YouTube video player" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen>
       </iframe>
     </div>
     
     <div class="movie-details">
       <h2>٦ أيام (وعملت إيه فينا السنين)</h2>
-      
       <p class="description">
-        فيلم دراما رومانسي. تدور الأحداث حول "يوسف" و "عالية" اللذين يلتقيان بعد سنوات طويلة من الفراق الذي فُرض عليهما بسبب ظروف قهرية. تجمعهم الصدفة مرة أخرى بعد أن اتخذ كل منهما مساراً مختلفاً في حياته، ليفتحا ملفات الماضي ويتساءلا "عملت إيه فينا السنين؟".
+        فيلم دراما رومانسي. تدور الأحداث حول "يوسف" و "عالية" اللذين يلتقيان بعد سنوات طويلة من الفراق...
       </p>
-      
       <div class="info-section">
         <h3>الأبطال:</h3>
-        <ul>
-          <li>أحمد مالك</li>
-          <li>آية سماحة</li>
-        </ul>
+        <ul><li>أحمد مالك</li><li>آية سماحة</li></ul>
       </div>
-      
       <div class="info-section">
-        <h3>إخراج:</h3>
-        <p>كريم شعبان</p>
+        <h3>إخراج:</h3> <p>كريم شعبان</p>
       </div>
-
       <div class="info-section">
-        <h3>تأليف:</h3>
-        <p>وائل حمدي</p>
+        <h3>تأليف:</h3> <p>وائل حمدي</p>
       </div>
-      
     </div>
-    
   </div>
 </main>
 
-
 <footer>
-  <p>&copy; 2025 كل الحقوق محفوظة</p>
+  <p>© 2025 كل الحقوق محفوظة</p>
   <a href="https://www.instagram.com/8_3w" target="_blank">Instagram</a>
 </footer>
-
 
 </body>
 </html>
