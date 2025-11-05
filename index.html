@@ -9,7 +9,8 @@ body {
   color: #fff;
   font-family: Arial, sans-serif;
   text-align: center;
-  padding-bottom: 80px; /* ضفت مساحة جوه حتى الفوتر ميكون لازق */
+  margin: 0;
+  padding-bottom: 80px;
 }
 h1 { color: #E50914; }
 .video-card {
@@ -27,28 +28,19 @@ video, iframe {
   border: none;
 }
 
-/* ستايل الفوتر (التذييل) الجديد */
 footer {
-  position: fixed; /* نثبته جوه الشاشة */
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: #111; /* لون أغمق شوية */
-  padding: 15px 0;
+  margin-top: 40px;
+  padding: 20px;
+  color: #aaa;
   font-size: 14px;
-  color: #888; /* لون رمادي فاتح */
 }
-
 footer a {
-  color: #fff; /* لون الحساب أبيض */
+  color: #E50914;
   text-decoration: none;
-  font-weight: bold;
 }
-
 footer a:hover {
-  color: #E50914; /* يتغير أحمر من الماوس يجي عليه */
+  text-decoration: underline;
 }
-
 </style>
 </head>
 <body>
@@ -57,22 +49,21 @@ footer a:hover {
 <h2>قائمة الأفلام</h2>
 
 <div class="video-card">
-  <h3>6 ايام</h3>
+  <h3>اسم الفيلم</h3>
   
   <iframe src="https://drive.google.com/file/d/1WNheb3CRBO_yTfSozDsQcLmH26QeVsZm/preview" 
-          allowfullscreen>
+          allowfullscreen="true" 
+          allow="fullscreen">
   </iframe>
 
 </div>
 
 
 <footer>
-  <p>كل الحقوق محفوظة © 2025</p>
-  <p>
-    تابعني على انستاغرام: 
-    <a href="https://www.instagram.com/8_3w" target="_blank">8_3w</a>
-  </p>
+  <p>&copy; 2025 كل الحقوق محفوظة</p>
+  <a href="https://www.instagram.com/8_3w" target="_blank">@8_3w</a>
 </footer>
+
 
 </body>
 </html>
