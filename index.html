@@ -18,9 +18,15 @@ h1 { color: #E50914; }
   padding: 10px;
   border-radius: 8px;
 }
-video {
+
+/* هنا التعديل: ضفت iframe للستايل 
+  حتى ياخذ نفس حجم ونعومة الفيديو 
+*/
+video, iframe {
   width: 300px;
+  height: 170px; /* انطيته ارتفاع مناسب */
   border-radius: 4px;
+  border: none; /* حتى نشيل الحدود مالته */
 }
 </style>
 </head>
@@ -30,10 +36,12 @@ video {
 <h2>قائمة الأفلام</h2>
 
 <div class="video-card">
-  <h3>6 ايام</h3>
-  <video controls>
-    <source src="https://drive.google.com/uc?export=download&id=1WNheb3CRBO_yTfSozDsQcLmH26QeVsZm" type="video/mp4">
-  </video>
+  <h3>6 ايام </h3>
+  
+  <iframe src="https://drive.google.com/file/d/1WNheb3CRBO_yTfSozDsQcLmH26QeVsZm/preview" 
+          allowfullscreen>
+  </iframe>
+
 </div>
 
 </body>
