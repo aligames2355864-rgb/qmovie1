@@ -1,27 +1,41 @@
-<style>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Q Movie - مشاهدة ٦ أيام</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
         /* --- الإعدادات العامة --- */
         body {
-            background-color: #0d0d0d;
-            color: #e0e0e0;
-            font-family: 'Cairo', 'Montserrat', Arial, sans-serif;
+            background-color: #0d0d0d; /* أغمق شوية */
+            color: #e0e0e0; /* لون أفتح للنص العام */
+            font-family: 'Cairo', 'Montserrat', Arial, sans-serif; /* خطوط جديدة */
             text-align: center;
             margin: 0;
             padding-bottom: 100px;
-            /* overflow-x: hidden;  <-- تم حذفه */
+            overflow-x: hidden; /* لمنع السكرول الأفقي */
         }
         a {
             color: #E50914;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease; /* تأثير انتقال على اللون */
         }
         a:hover {
-            color: #ff3344;
+            color: #ff3344; /* لون أفتح عند الهوفر */
             text-decoration: none;
         }
 
         /* --- الهيدر (العنوان الرئيسي) --- */
         header {
             padding: 25px;
+            /* gradient effect */
             background: linear-gradient(to right, #1a1a1a, #0d0d0d);
             border-bottom: 1px solid #222;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -29,27 +43,27 @@
         header h1 {
             color: #E50914;
             margin: 0;
-            font-size: 3em;
-            font-weight: 700;
-            letter-spacing: 2px;
-            display: flex;
+            font-size: 3em; /* حجم أكبر */
+            font-weight: 700; /* أثخن */
+            letter-spacing: 2px; /* تباعد الحروف */
+            display: flex; /* لترتيب الأيقونة مع النص */
             justify-content: center;
             align-items: center;
         }
         header h1 i {
-            margin-left: 10px;
+            margin-left: 10px; /* مسافة بين الأيقونة والنص */
             color: #E50914;
         }
 
         /* --- حاوية الفيلم --- */
         .movie-showcase {
-            max-width: 950px;
-            margin: 40px auto;
-            background-color: #1a1a1a;
-            border-radius: 12px;
-            /* overflow: hidden; <-- تم حذفه */
-            box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-            border: 1px solid #333;
+            max-width: 950px; /* عرض أكبر قليلاً */
+            margin: 40px auto; /* مسافة أكبر */
+            background-color: #1a1a1a; /* أغمق */
+            border-radius: 12px; /* زوايا أكثر دائرية */
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.7); /* ظل أقوى */
+            border: 1px solid #333; /* حدود خفيفة */
         }
 
         /* --- مشغل الفيديو --- */
@@ -58,7 +72,7 @@
             padding-bottom: 56.25%; /* نسبة 16:9 */
             height: 0;
             background-color: #000;
-            border-bottom: 3px solid #E50914;
+            border-bottom: 3px solid #E50914; /* خط أحمر تحت الفيديو */
         }
         .video-player iframe {
             position: absolute;
@@ -71,19 +85,19 @@
 
         /* --- تفاصيل الفيلم --- */
         .movie-details {
-            padding: 30px;
+            padding: 30px; /* مساحة داخلية أكبر */
             text-align: right;
-            background-color: #1a1a1a;
+            background-color: #1a1a1a; /* لتوحيد اللون مع الـ showcase */
         }
         .movie-details h2 {
-            font-size: 2.5em;
+            font-size: 2.5em; /* حجم أكبر */
             color: #fff;
             margin-top: 0;
             margin-bottom: 15px;
             position: relative;
             padding-bottom: 10px;
         }
-        .movie-details h2::after {
+        .movie-details h2::after { /* خط تحت العنوان */
             content: '';
             position: absolute;
             right: 0;
@@ -94,20 +108,20 @@
             border-radius: 2px;
         }
         .movie-details p.description {
-            color: #b0b0b0;
-            font-size: 1.2em;
+            color: #b0b0b0; /* لون أفتح قليلاً */
+            font-size: 1.2em; /* حجم أكبر */
             line-height: 1.8;
             margin-bottom: 30px;
         }
         .info-section {
             margin-top: 25px;
-            border-top: 1px solid #2a2a2a;
+            border-top: 1px solid #2a2a2a; /* خط فاصل أغمق */
             padding-top: 25px;
-            text-align: right;
+            text-align: right; /* رجعناها يمين */
         }
         .info-section h3 {
             color: #aaa;
-            font-size: 1.3em;
+            font-size: 1.3em; /* حجم أكبر */
             margin-bottom: 12px;
             font-weight: 700;
         }
@@ -116,22 +130,22 @@
             padding: 0;
             margin: 0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: flex-end;
+            flex-wrap: wrap; /* حتى تنزل سطر إذا هواية عناصر */
+            gap: 12px; /* مسافة بين العناصر */
+            justify-content: flex-end; /* للمحاذاة لليمين */
         }
         .info-section ul li {
             background-color: #333;
             color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 8px 15px; /* حجم أكبر للـ padding */
+            border-radius: 20px; /* زوايا أكثر دائرية (pill shape) */
             font-size: 0.95em;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .info-section ul li:hover {
-            background-color: #E50914;
-            transform: translateY(-2px);
-            cursor: default;
+            background-color: #E50914; /* تغيير لون عند الهوفر */
+            transform: translateY(-2px); /* تأثير ارتفاع بسيط */
+            cursor: default; /* حتى ما يتغير شكل الماوس */
         }
 
         /* --- الفوتر (الحقوق) --- */
@@ -171,7 +185,62 @@
                 font-size: 1em;
             }
             .info-section ul {
-                justify-content: center;
+                justify-content: center; /* توسيط العناصر في الشاشات الصغيرة */
             }
         }
     </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fas fa-film"></i> Q Movie</h1>
+    </header>
+
+    <main>
+        <div class="movie-showcase">
+            <div class="video-player">
+                <iframe 
+                    src="https://drive.google.com/file/d/1WNheb3CRBO_yTfSozDsQcLmH26QeVsZm/preview" 
+                    allowfullscreen="true" 
+                    allow="fullscreen">
+                </iframe>
+            </div>
+            
+            <div class="movie-details">
+                <h2>٦ أيام (وعملت إيه فينا السنين)</h2>
+                <p class="description">
+                    فيلم دراما رومانسي يتتبع قصة "يوسف" و "عالية" اللذين يلتقيان بعد سنوات طويلة من الفراق، ليكتشفا أن مشاعر الماضي لا تزال حية. هل سيتمكنان من إعادة إحياء علاقتهما في عالم متغير؟
+                </p>
+                <div class="info-section">
+                    <h3>الأبطال:</h3>
+                    <ul>
+                        <li>أحمد مالك</li>
+                        <li>آية سماحة</li>
+                        <li>هدى المفتي</li>
+                    </ul>
+                </div>
+                <div class="info-section">
+                    <h3>إخراج:</h3>
+                    <p>كريم شعبان</p>
+                </div>
+                <div class="info-section">
+                    <h3>تأليف:</h3>
+                    <p>وائل حمدي</p>
+                </div>
+                <div class="info-section">
+                    <h3>سنة الإنتاج:</h3>
+                    <p>2024</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 كل الحقوق محفوظة</p>
+        <div>
+            <a href="https://www.instagram.com/8_3w" target="_blank"><i class="fab fa-instagram"></i> 8_3w</a>
+            <a href="#"><i class="fas fa-envelope"></i> تواصل معنا</a>
+        </div>
+    </footer>
+    </body>
+</html>
