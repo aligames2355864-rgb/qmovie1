@@ -71,6 +71,8 @@
             background-color: #000;
             border-bottom: 3px solid #E50914;
         }
+        /* تعديل الستايل ليشمل الفيديو مباشرة */
+        .video-player video,
         .video-player iframe {
             position: absolute;
             top: 0;
@@ -195,14 +197,15 @@
 
     <main>
         <div class="movie-showcase">
+            
             <div class="video-player">
-                <iframe 
-                    src="https://player.vimeo.com/video/1136262303"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen="true"
-                    webkitallowfullscreen="true"
-                    mozallowfullscreen="true">
-                </iframe>
+                <video
+                    src="https://drive.google.com/uc?id=1WNheb3CRBO_yTfSozDsQcLmH26QeVsZm"
+                    controls
+                    preload="metadata"
+                    style="background-color: #000;">
+                    عذراً، المتصفح مالتك ما يدعم تشغيل الفيديو.
+                </video>
             </div>
             <div class="movie-details">
                 <h2>٦ أيام (وعملت إيه فينا السنين)</h2>
