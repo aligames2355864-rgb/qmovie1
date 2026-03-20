@@ -3,348 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Q Movie - مشاهدة ٦ أيام</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <title>إلى طيبة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- الإعدادات الأساسية والعامة --- */
-        body {
-            background-color: #0c0c0c;
-            color: #e0e0e0;
-            font-family: 'Cairo', 'Montserrat', Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding-bottom: 80px;
-            line-height: 1.6;
-            overflow-x: hidden; /* ضروري للأنميشن حتى ميخربط */
-        }
-        
-        /* ... (كل الستايلات الباقية تبقى نفسها بالضبط) ... */
-        
-        a {
-            color: #E50914;
-            text-decoration: none;
-            transition: color 0.3s ease, transform 0.2s ease;
-        }
-        a:hover {
-            color: #ff3344;
-            transform: translateY(-2px);
+        /* إعدادات الصفحة الأساسية */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'Aref Ruqaa', serif;
+            background: linear-gradient(135deg, #1a0b2e, #4b1d52);
+            color: white; overflow: hidden;
         }
 
-        /* --- الهيدر (العنوان الرئيسي) --- */
-        header {
-            padding: 30px 20px;
-            background: linear-gradient(to right, #1a1a1a, #0d0d0d);
-            border-bottom: 1px solid #222;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.4);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        /* القلوب المتحركة في الخلفية */
+        .hearts-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 0; pointer-events: none;
         }
-        header h1 {
-            color: #E50914;
-            margin: 0;
-            font-size: 3.5em;
-            font-weight: 700;
-            letter-spacing: 3px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-shadow: 0 0 10px rgba(229, 9, 20, 0.6);
+        .heart-float {
+            position: absolute; bottom: -10%;
+            color: rgba(255, 133, 198, 0.3); font-size: 20px;
+            animation: floatUp 10s infinite linear;
         }
-        header h1 i {
-            margin-left: 15px;
-            font-size: 0.9em;
-            color: #E50914;
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
         }
 
-        /* --- حاوية الفيلم (الكونتينر الرئيسي) --- */
-        .movie-showcase {
-            max-width: 1000px;
-            margin: 50px auto;
-            background-color: #181818;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            border: 1px solid #333;
-            overflow: hidden;
+        /* حاوية الشاشات */
+        .container {
+            position: relative; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            text-align: center; z-index: 1;
         }
 
-        /* --- مشغل الفيديو --- */
-        .video-player {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            background-color: #000;
-            border-bottom: 4px solid #E50914;
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
-            overflow: hidden;
+        .screen {
+            position: absolute; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transform: scale(0.9);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px; box-sizing: border-box;
         }
-        .video-player iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+        .screen.active {
+            opacity: 1; visibility: visible; transform: scale(1);
         }
 
-        /* --- تفاصيل الفيلم --- */
-        .movie-details {
-            padding: 35px 40px;
-            text-align: right;
-            background-color: #181818;
+        /* تنسيق النصوص */
+        h1 { font-size: 3.5rem; margin-bottom: 5px; color: #ff9ed2; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        h2 { font-size: 2.2rem; margin-bottom: 20px; color: #fdfdfd; }
+        p { font-size: 1.5rem; line-height: 1.8; font-family: 'Tajawal', sans-serif; }
+
+        /* تنسيق حقل إدخال سؤال الأمان */
+        .input-field {
+            padding: 15px; font-size: 1.2rem; border-radius: 10px;
+            border: 2px solid #ff9ed2; background: rgba(255, 255, 255, 0.1);
+            color: white; text-align: center; font-family: 'Tajawal', sans-serif;
+            margin-bottom: 10px; width: 80%; max-width: 300px; outline: none;
+            transition: border 0.3s;
         }
-        .movie-details h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3em;
-            color: #fff;
-            margin-top: 0;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
+        .input-field::placeholder { color: #ccc; }
+        .input-field:focus { border-color: #ff1493; }
+
+        /* تنسيق رسالة الخطأ */
+        .error-msg {
+            color: #ff4d4d; font-size: 1.1rem; height: 25px; 
+            margin-top: 5px; font-family: 'Tajawal', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
-        .movie-details h2::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 80px;
-            height: 5px;
-            background-color: #E50914;
-            border-radius: 3px;
+
+        /* أزرار التنقل */
+        .btn-pulse {
+            background: linear-gradient(45deg, #ff1493, #ff69b4);
+            color: white; border: none; padding: 15px 40px;
+            font-size: 1.5rem; border-radius: 50px; cursor: pointer;
+            font-family: 'Tajawal', sans-serif; font-weight: bold;
+            margin-top: 20px; box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+            animation: pulse 1.5s infinite;
         }
-        .movie-details p.description {
-            color: #b5b5b5;
-            font-size: 1.25em;
-            line-height: 1.9;
-            margin-bottom: 40px;
-            font-weight: 300;
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 20, 147, 0.6); }
+            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(255, 20, 147, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 20, 147, 0.6); }
         }
-        
-        /* --- أقسام المعلومات (أبطال، إخراج، إلخ) --- */
-        .info-section {
-            margin-top: 30px;
-            border-top: 1px solid #2a2a2a;
-            padding-top: 30px;
-            text-align: right;
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1); border: 2px solid #ff9ed2;
+            color: white; padding: 12px 30px; font-size: 1.2rem;
+            border-radius: 30px; cursor: pointer; font-family: 'Tajawal', sans-serif;
+            margin-top: 20px; transition: all 0.3s;
         }
-        .info-section:first-of-type {
-            border-top: none;
-            padding-top: 0;
+        .btn:hover { background: #ff9ed2; color: #1a0b2e; }
+
+        /* تنسيق عداد الأيام */
+        .counter-container {
+            display: flex; gap: 10px; margin: 15px 0 25px 0;
+            justify-content: center; flex-wrap: wrap;
         }
-        .info-section h3 {
-            color: #e0e0e0;
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            font-weight: 600;
-            position: relative;
-            padding-right: 15px;
-        }
-        .info-section h3::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 5px;
-            height: 80%;
-            background-color: #E50914;
-            border-radius: 2px;
-        }
-        .info-section ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: flex-end;
-        }
-        .info-section ul li,
-        .info-section p {
-            background-color: #2a2a2a;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1.05em;
-            font-weight: 400;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        .time-box {
+            background: rgba(255, 20, 147, 0.2);
+            border: 1px solid #ff9ed2;
+            border-radius: 12px;
+            padding: 10px 15px;
+            min-width: 60px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: inline-block;
         }
-        .info-section ul li:hover,
-        .info-section p:hover {
-            background-color: #E50914;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(229, 9, 20, 0.4);
-            cursor: default;
+        .time-box span {
+            display: block; font-size: 2rem; font-weight: bold; color: #ff9ed2;
+            font-family: 'Tajawal', sans-serif;
         }
-
-        /* --- الفوتر (الحقوق) --- */
-        footer {
-            margin-top: 80px;
-            padding: 30px 20px;
-            color: #888;
-            font-size: 15px;
-            background-color: #1a1a1a;
-            border-top: 1px solid #222;
-            box-shadow: 0 -3px 15px rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        footer p {
-            margin: 0;
-            font-weight: 300;
-        }
-        footer div a {
-            margin: 0 12px;
-            color: #E50914;
-            font-size: 1.1em;
-            display: inline-flex;
-            align-items: center;
-        }
-        footer div a i {
-            margin-left: 8px;
-        }
-        footer div a:hover {
-            color: #ff3344;
-            transform: translateY(-2px);
+        .time-box p {
+            margin: 0; font-size: 1rem; color: white;
+            font-family: 'Tajawal', sans-serif; line-height: 1;
         }
 
-        /* --- الـ Media Queries للاستجابة على الشاشات الصغيرة --- */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.5em;
-                letter-spacing: 2px;
-            }
-            header h1 i {
-                margin-left: 10px;
-            }
-            .movie-showcase {
-                margin: 30px auto;
-                border-radius: 10px;
-            }
-            .movie-details {
-                padding: 25px 20px;
-            }
-            .movie-details h2 {
-                font-size: 2.2em;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-            }
-            .movie-details h2::after {
-                width: 50px;
-                height: 3px;
-            }
-            .movie-details p.description {
-                font-size: 1.1em;
-                margin-bottom: 30px;
-            }
-            .info-section {
-                margin-top: 20px;
-                padding-top: 20px;
-            }
-            .info-section h3 {
-                font-size: 1.3em;
-                margin-bottom: 10px;
-            }
-            .info-section ul {
-                justify-content: center;
-                gap: 10px;
-            }
-            .info-section ul li,
-            .info-section p {
-                padding: 8px 15px;
-                font-size: 0.9em;
-                border-radius: 20px;
-            }
-            footer {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding: 25px 15px;
-            }
-            footer div {
-                margin-top: 15px;
-            }
+        /* الصناديق والمحتويات */
+        .message-box {
+            background: rgba(0, 0, 0, 0.3); padding: 30px; border-radius: 20px;
+            border-top: 3px solid #ff9ed2; border-bottom: 3px solid #ff9ed2; max-width: 90%;
         }
-        
+
+        .random-reason-box {
+            min-height: 80px; margin: 20px 0; color: #ff9ed2; font-size: 1.8rem;
+            font-weight: bold; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); transition: opacity 0.5s;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1><i class="fas fa-film"></i> Q Movie</h1>
-    </header>
+    <audio id="bg-music" loop>
+        <source src="https://rr4---sn-4wg7lnez.googlevideo.com/videoplayback?expire=1773977332&ei=lGq8acDQC8as4dUPp6KLoQ4&ip=181.15.209.195&id=o-AA8L0Saqt_feC7PyGKizfYKVn1JiB3Wg31atTZ2oroNK&itag=139&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=87&bui=AVNa5-zWTU43601x3Le1Z98520EAbjjGYDc7aQeADnasmR5tqV_kAod2QMI4fS8tDtgLv6hf-zmQYDSZ&spc=6dlaFOn8gihr&vprv=1&svpuc=1&mime=audio%2Fmp4&rqh=1&gir=yes&clen=1770175&dur=290.156&lmt=1743383945606347&keepalive=yes&fexp=51565116,51565682,51791334&c=ANDROID_VR&txp=4532534&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AHEqNM4wRQIhAM_eve2j6cLjjmBPts_W5MaySQW8nkczOUmV5RTPuHP6AiADekqrDUlnLLkzQCTKGIno4PupcyPkZSQTQPZ_BqWd8A%3D%3D&rm=sn-uxaxjvh5gbxoupo5-jvgz7k,sn-j5cax8pnpvo-x1xls7l,sn-x1xs77l&rrc=79,79,104&req_id=84aafec95f96a3ee&cmsv=e&rms=nxu,au&redirect_counter=3&cms_redirect=yes&ipbypass=yes&met=1773960401,&mh=_D&mip=169.224.36.241&mm=30&mn=sn-4wg7lnez&ms=nxu&mt=1773960033&mv=m&mvi=4&pl=24&lsparams=cps,ipbypass,met,mh,mip,mm,mn,ms,mv,mvi,pl,rms&lsig=APaTxxMwRAIgVPRqsXGg1ziPqlgAXNgsAqkSZ0NC_eWhYOrkcT32hlgCIGV1XvrUwykK8zP63qBM0lpG4D2gldsD4Zzv_7FJhIwx" type="audio/mp4">
+    </audio>
 
-    <main>
-        <div class="movie-showcase" data-aos="fade-up" data-aos-duration="800">
+    <div class="hearts-bg" id="hearts-bg"></div>
+
+    <div class="container">
+        <div class="screen active" id="screen-0">
+            <h1 style="font-size: 2.5rem;">🔒 سؤال الأمان</h1>
+            <p>للعبور، يجب أن تجيبي على هذا السؤال:</p>
+            <h2 style="color: #ff9ed2; font-family: 'Tajawal', sans-serif;">متى تاريخ عودة علاقتنا؟</h2>
             
-            <div class="video-player">
-                <iframe 
-                    src="https://fast.wistia.net/embed/iframe/q07a6pttxv" 
-                    title="Movie Video Player" 
-                    allow="autoplay; fullscreen; picture-in-picture" 
-                    allowfullscreen="true"
-                    webkitallowfullscreen="true"
-                    mozallowfullscreen="true">
-                </iframe>
-            </div>
+            <input type="text" id="security-answer" class="input-field" placeholder="أدخلي التاريخ هنا..." autocomplete="off">
+            <div id="error-msg" class="error-msg"></div>
             
-            <div class="movie-details">
-                <h2 data-aos="fade-right" data-aos-delay="200">٦ أيام (وعملت إيه فينا السنين)</h2>
-                <p class="description" data-aos="fade-right" data-aos-delay="300">
-                    فيلم دراما رومانسي يتتبع قصة "يوسف" و "عالية" اللذين يلتقيان بعد سنوات طويلة من الفراق، ليكتشفا أن مشاعر الماضي لا تزال حية. هل سيتمكنان من إعادة إحياء علاقتهما في عالم متغير؟
-                </p>
-                <div class="info-section" data-aos="zoom-in-up" data-aos-delay="400">
-                    <h3>الأبطال:</h3>
-                    <ul>
-                        <li>أحمد مالك</li>
-                        <li>آية سماحة</li>
-                        <li>هدى المفتي</li>
-                    </ul>
-                </div>
-                <div class="info-section" data-aos="zoom-in-up" data-aos-delay="500">
-                    <h3>إخراج:</h3>
-                    <p>كريم شعبان</p>
-                </div>
-                <div class="info-section" data-aos="zoom-in-up" data-aos-delay="600">
-                    <h3>تأليف:</h3>
-                    <p>وائل حمدي</p>
-                </div>
-                <div class="info-section" data-aos="zoom-in-up" data-aos-delay="700">
-                    <h3>سنة الإنتاج:</h3>
-                    <p>2024</p>
-                </div>
+            <button class="btn-pulse" onclick="checkSecurityAnswer()">دخول ❤️</button>
+        </div>
+
+        <div class="screen" id="screen-1">
+            <h1 style="font-size: 4rem;">🌙</h1>
+            <h2>كل عام وأنتي بخير يا أجمل أشيائي</h2>
+            <p style="color: #ff9ed2; font-size: 1.8rem; font-family: 'Aref Ruqaa';">من علي ❤️</p>
+            
+            <p style="font-size: 1.2rem; margin-bottom: 5px; color: #ddd;">نحن معاً منذ أن بدأت قصتنا:</p>
+            <div class="counter-container">
+                <div class="time-box"><span id="c-days">0</span><p>يوم</p></div>
+                <div class="time-box"><span id="c-hours">00</span><p>ساعة</p></div>
+                <div class="time-box"><span id="c-minutes">00</span><p>دقيقة</p></div>
+                <div class="time-box"><span id="c-seconds">00</span><p>ثانية</p></div>
             </div>
-        </div>
-    </main>
 
-    <footer>
-        <p>&copy; 2025 كل الحقوق محفوظة</p>
-        <div>
-            <a href="https://www.instagram.com/8_3w" target="_blank"><i class="fab fa-instagram"></i> 8_3w</a>
-            <a href="#"><i class="fas fa-envelope"></i> تواصل معنا</a>
+            <button class="btn" onclick="nextScreen(2)">أكملي القراءة</button>
         </div>
-    </footer>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+        <div class="screen" id="screen-2">
+            <div class="message-box">
+                <p>"طيبة الغالية،<br>أردت أن أصنع لكِ شيئاً مميزاً يشبهك. أنتِ أجمل صدفة في حياتي، وكل عام وأنتِ الأقرب لقلبي."</p>
+            </div>
+            <button class="btn" onclick="nextScreen(3)">التالي</button>
+        </div>
+
+        <div class="screen" id="screen-3">
+            <h2>لماذا أحبك يا طيبة؟ 💖</h2>
+            <div class="random-reason-box" id="reason-text">اضغطي على الزر لتعرفي...</div>
+            <button class="btn" onclick="generateReason()" style="background: #ff1493; border:none;">اضغطي هنا لمعرفة سبب 🌸</button>
+            <br>
+            <button class="btn" onclick="nextScreen(0)">إغلاق الموقع 🔒</button>
+        </div>
+    </div>
+
     <script>
-        AOS.init();
-    </script>
+        // دالة إنشاء القلوب في الخلفية
+        const heartsBg = document.getElementById('hearts-bg');
+        for(let i=0; i<15; i++) {
+            let heart = document.createElement('div');
+            heart.className = 'heart-float'; heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            heart.style.animationDelay = (Math.random() * 5) + 's';
+            heartsBg.appendChild(heart);
+        }
 
+        // دالة التحقق من سؤال الأمان
+        function checkSecurityAnswer() {
+            const answer = document.getElementById('security-answer').value.trim();
+            const errorMsg = document.getElementById('error-msg');
+            
+            // تم تحديث التاريخ ليكون 18/2/2026 بأشكال مختلفة
+            if (answer === "18/2/2026" || answer === "18-2-2026" || answer === "2026/2/18" || answer === "١٨/٢/٢٠٢٦") {
+                errorMsg.innerText = ""; 
+                document.getElementById('security-answer').value = ""; 
+                nextScreen(1); 
+            } else {
+                errorMsg.innerText = "التاريخ غير صحيح، حاولي تتذكرين يا روحي! ";
+            }
+        }
+
+        // تاريخ بداية العلاقة تم تحديثه إلى 8/8/2024
+        const startDate = new Date("2024-08-08T00:00:00").getTime();
+
+        // دالة تحديث عداد الوقت
+        function updateLoveCounter() {
+            const now = new Date().getTime();
+            const difference = now - startDate;
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById("c-days").innerText = days;
+            document.getElementById("c-hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("c-minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("c-seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+        }
+        
+        setInterval(updateLoveCounter, 1000);
+
+        // دالة الانتقال بين الشاشات
+        function nextScreen(screenIndex) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('screen-' + screenIndex).classList.add('active');
+
+            if(screenIndex === 1) {
+                var audio = document.getElementById('bg-music');
+                audio.play().catch(e => console.log("تحتاج المستخدمة للتفاعل"));
+                fireConfetti();
+            }
+            
+            if(screenIndex === 0) {
+                 var audio = document.getElementById('bg-music');
+                 audio.pause();
+                 audio.currentTime = 0;
+            }
+        }
+
+        // دالة إطلاق القصاصات الورقية (Confetti)
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) { return clearInterval(interval); }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // قائمة أسباب الحب (تم تحديث الاسم)
+        const reasons = [
+            "لأن احب وجودك ✨",
+            "لأن تفهمينني دائما",
+            "لأن عندج احن كلب بهل الدنيا ❤️",
+            "لأن هوايييي احبج ",
+            "لأن انت... طيبة! "
+        ];
+
+        // دالة إظهار سبب عشوائي
+        function generateReason() {
+            const reasonBox = document.getElementById('reason-text');
+            const randomIndex = Math.floor(Math.random() * reasons.length);
+            reasonBox.style.opacity = 0;
+            setTimeout(() => {
+                reasonBox.innerHTML = reasons[randomIndex];
+                reasonBox.style.opacity = 1;
+            }, 300);
+        }
+    </script>
 </body>
 </html>
