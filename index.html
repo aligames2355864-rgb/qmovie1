@@ -51,7 +51,7 @@
             color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; border: 2px solid var(--primary-brown);
         }
 
-        /* الحاوية الرئيسية الموسعة */
+        /* الحاوية الرئيسية */
         .container {
             width: 95%; max-width: 1250px; margin: 25px auto; padding: 25px; flex: 1;
             background-color: var(--bg-white); border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.03);
@@ -61,7 +61,7 @@
         .page-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* أزرار تصفية الأقسام مع الصور */
+        /* أزرار تصفية الأقسام */
         .categories-scroll {
             display: flex; gap: 12px; overflow-x: auto; padding: 5px 0 15px 0; margin-bottom: 20px;
             scrollbar-width: thin; align-items: center; width: 100%;
@@ -78,7 +78,7 @@
             background: var(--primary-brown); color: white; border-color: var(--primary-brown);
         }
 
-        /* شبكة عرض القطع بأسلوب متعدد الأعمدة افقياً */
+        /* شبكة عرض القطع بالعرض متجتورة */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -108,8 +108,9 @@
         .product-info {
             padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 8px;
         }
+        .tags-box { display: flex; flex-wrap: wrap; gap: 4px; }
         .product-cat-tag {
-            font-size: 11px; background: #f5efe8; color: var(--secondary-brown); padding: 2px 8px; border-radius: 8px; width: fit-content; font-weight: bold;
+            font-size: 10px; background: #f5efe8; color: var(--secondary-brown); padding: 2px 6px; border-radius: 8px; font-weight: bold;
         }
         .product-title { font-size: 15px; font-weight: 700; margin: 4px 0; color: #222; }
         .product-price { color: var(--secondary-brown); font-weight: 700; font-size: 15px; }
@@ -294,7 +295,7 @@
                 <div id="ordersListContainer">جاري تحميل الطلبات أونلاين...</div>
             </div>
 
-            <!-- قسم إدارة الأقسام وصورها ومع زر حذف الكل -->
+            <!-- قسم إدارة الأقسام وصورها -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3><i class="fa-solid fa-layer-group"></i> إدارة الأقسام والتصنيفات وصورها</h3>
                 <form onsubmit="handleAddCategory(event)" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
@@ -327,7 +328,7 @@
                 </div>
             </div>
 
-            <!-- إضافة قطعة جديدة -->
+            <!-- إضافة قطعة جديدة مع إمكانية نشرها في أي قسم أو عدة أقسام -->
             <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة</h3>
             <form onsubmit="handleAddProduct(event)" style="margin-top: 15px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
                 <div class="form-row">
@@ -336,29 +337,30 @@
                         <input type="text" id="pTitle" required>
                     </div>
                     <div class="form-group">
-                        <label>القسم / التصنيف *</label>
-                        <select id="pCategory" required></select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
                         <label>السعر (دينار) *</label>
                         <input type="number" id="pPrice" required>
-                    </div>
-                    <div class="form-group">
-                        <label>العدد المتوفر (مثلاً: 50) *</label>
-                        <input type="number" id="pStock" required min="1">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa-solid fa-image"></i> اختر صورة القطعة من المعرض/الاستوديو *</label>
-                    <input type="file" id="pImgFile" accept="image/*" required style="padding: 6px;">
-                    
-                    <div id="imgPreviewBox" style="display: none; margin-top: 10px;">
-                        <p style="font-size: 12px; color: #666; margin-bottom: 5px;">معاينة الصورة المختارة:</p>
-                        <img id="imgPreview" src="" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                    <label><i class="fa-solid fa-tags"></i> اختر القسم / الأقسام التي تنشر بها القطعة *</label>
+                    <div id="pCategoryCheckboxes" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; background: #fafafa; border: 1px solid #ddd; border-radius: 8px;"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>العدد المتوفر (مثلاً: 50) *</label>
+                        <input type="number" id="pStock" required min="1">
                     </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-image"></i> اختر صورة القطعة من المعرض/الاستوديو *</label>
+                        <input type="file" id="pImgFile" accept="image/*" required style="padding: 6px;">
+                    </div>
+                </div>
+
+                <div id="imgPreviewBox" style="display: none; margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #666; margin-bottom: 5px;">معاينة الصورة المختارة:</p>
+                    <img id="imgPreview" src="" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
                 </div>
 
                 <button type="submit" class="btn" style="background-color: var(--secondary-brown); padding: 12px; font-size: 15px;">نشر القطعة بالمتجر والحفظ</button>
@@ -366,7 +368,7 @@
 
             <h3 style="margin-top: 30px;">المخزون الحالي</h3>
             <table class="cart-table" style="margin-top: 10px;">
-                <thead><tr><th>اسم القطعة</th><th>القسم</th><th>السعر</th><th>المتبقي</th><th>حذف</th></tr></thead>
+                <thead><tr><th>اسم القطعة</th><th>الأقسام</th><th>السعر</th><th>المتبقي</th><th>حذف</th></tr></thead>
                 <tbody id="adminInventory"></tbody>
             </table>
         </section>
@@ -554,15 +556,26 @@
             });
         }
 
+        /* خيارات مربعات التحديد واختيار الأقسام المتاحة */
         function updateCategoryDropdown() {
-            const select = document.getElementById('pCategory');
-            select.innerHTML = '';
+            const box = document.getElementById('pCategoryCheckboxes');
+            if(!box) return;
+            box.innerHTML = '';
             if(categories.length === 0) {
-                select.innerHTML = '<option value="عام">عام</option>';
+                box.innerHTML = `
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:500; background:#fff; padding:6px 12px; border:1px solid #ddd; border-radius:15px; cursor:pointer;">
+                        <input type="checkbox" class="cat-checkbox" value="عام" checked> عام
+                    </label>
+                `;
                 return;
             }
             categories.forEach(c => {
-                select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                box.innerHTML += `
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:500; background:#fff; padding:6px 12px; border:1px solid #ddd; border-radius:15px; cursor:pointer; font-size:14px;">
+                        <input type="checkbox" class="cat-checkbox" value="${c.name}">
+                        ${c.name}
+                    </label>
+                `;
             });
         }
 
@@ -629,7 +642,6 @@
             }
         };
 
-        // دالة حذف كل الأقسام بلمسة واحدة
         window.deleteAllCategories = async function() {
             if (categories.length === 0) {
                 alert("لا توجد أقسام لحذفها!");
@@ -695,7 +707,12 @@
 
             const filtered = selectedCategory === "الكل" 
                 ? products 
-                : products.filter(p => p.category === selectedCategory);
+                : products.filter(p => {
+                    if (Array.isArray(p.category)) {
+                        return p.category.includes(selectedCategory);
+                    }
+                    return p.category === selectedCategory;
+                });
 
             if(filtered.length === 0) {
                 grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:30px; color:#888;">لا توجد قطع مضافة في هذا القسم حالياً.</p>';
@@ -704,12 +721,19 @@
 
             filtered.forEach(p => {
                 const isOut = p.stock <= 0;
+                let tagsHTML = '';
+                if (Array.isArray(p.category)) {
+                    tagsHTML = p.category.map(c => `<span class="product-cat-tag">${c}</span>`).join(' ');
+                } else {
+                    tagsHTML = `<span class="product-cat-tag">${p.category || 'عام'}</span>`;
+                }
+
                 grid.innerHTML += `
                     <div class="product-card">
                         <img src="${p.image || 'https://via.placeholder.com/150'}" class="product-img" alt="${p.name}">
                         <div class="product-info">
                             <div>
-                                <span class="product-cat-tag">${p.category || 'عام'}</span>
+                                <div class="tags-box">${tagsHTML}</div>
                                 <div class="product-title">${p.name}</div>
                                 <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
                             </div>
@@ -790,10 +814,13 @@
                 return;
             }
 
+            const selectedCats = Array.from(document.querySelectorAll('.cat-checkbox:checked')).map(cb => cb.value);
+            const catList = selectedCats.length > 0 ? selectedCats : ["عام"];
+
             const newProd = {
                 id: "item_" + Date.now(),
                 name: document.getElementById('pTitle').value,
-                category: document.getElementById('pCategory').value,
+                category: catList,
                 price: parseFloat(document.getElementById('pPrice').value),
                 stock: parseInt(document.getElementById('pStock').value),
                 image: uploadedBase64Image
@@ -814,7 +841,7 @@
                 saveProductsLocally(products);
             } catch(err) {}
 
-            alert("تم إدراج ونشر القطعة بنجاح بالمتجر!");
+            alert("تم إدراج ونشر القطعة بنجاح بالأقسام المحددة!");
             e.target.reset();
             uploadedBase64Image = "";
             document.getElementById('imgPreviewBox').style.display = 'none';
@@ -961,10 +988,11 @@
             const tbody = document.getElementById('adminInventory');
             tbody.innerHTML = '';
             products.forEach(p => {
+                const catStr = Array.isArray(p.category) ? p.category.join('، ') : (p.category || 'عام');
                 tbody.innerHTML += `
                     <tr>
                         <td>${p.name}</td>
-                        <td>${p.category || 'عام'}</td>
+                        <td>${catStr}</td>
                         <td>${Number(p.price).toLocaleString()} د.ع</td>
                         <td>${p.stock}</td>
                         <td><button onclick="deleteProduct('${p.id}')" style="color:red; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i> حذف</button></td>
