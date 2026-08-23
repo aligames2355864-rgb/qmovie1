@@ -27,7 +27,7 @@
         header {
             background-color: var(--primary-brown); color: white; padding: 15px 5%;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; width: 100%;
         }
 
         header .logo { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -51,23 +51,24 @@
             color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; border: 2px solid var(--primary-brown);
         }
 
+        /* الحاوية الرئيسية تم توسيعها لتستوعب القطع أفقياً */
         .container {
-            max-width: 1100px; margin: 30px auto; padding: 25px; flex: 1;
+            width: 95%; max-width: 1250px; margin: 25px auto; padding: 25px; flex: 1;
             background-color: var(--bg-white); border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.03);
         }
 
-        .page-section { display: none; }
+        .page-section { display: none; width: 100%; }
         .page-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* أزرار تصفية الأقسام مع الصور */
         .categories-scroll {
-            display: flex; gap: 12px; overflow-x: auto; padding: 5px 0 15px 0; margin-bottom: 15px;
-            scrollbar-width: thin; align-items: center;
+            display: flex; gap: 12px; overflow-x: auto; padding: 5px 0 15px 0; margin-bottom: 20px;
+            scrollbar-width: thin; align-items: center; width: 100%;
         }
         .category-chip {
             background: #f0ebe6; color: var(--primary-brown); border: 1px solid var(--light-brown);
-            padding: 6px 16px 6px 10px; border-radius: 25px; font-weight: 600; cursor: pointer; white-space: nowrap;
+            padding: 8px 18px 8px 12px; border-radius: 25px; font-weight: 600; cursor: pointer; white-space: nowrap;
             transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px;
         }
         .category-chip img {
@@ -77,48 +78,50 @@
             background: var(--primary-brown); color: white; border-color: var(--primary-brown);
         }
 
-        /* شبكة المنتجات بجانب بعضها البعض (واحدة بجانب الأخرى) */
+        /* شبكة عرض القطع - أفقية ومصفوفة بجانب بعضها البعض */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            width: 100%;
             margin-top: 15px;
         }
 
-        /* على شاشات الهاتف: تظهر قطعتان بالضبط بجانب بعضهما */
-        @media (max-width: 480px) {
+        /* استجابة الشاشات الصغيرة (الموبايل): قطعتان بجانب بعضهما */
+        @media (max-width: 600px) {
+            .container { width: 98%; padding: 12px; }
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
+                gap: 12px;
             }
         }
 
         .product-card {
             border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: #fff;
             display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); width: 100%;
         }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
         
         .product-img {
-            width: 100%; height: 160px; object-fit: cover; background: #f5f5f5;
+            width: 100%; height: 200px; object-fit: cover; background: #f5f5f5;
         }
         .product-info {
             padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 8px;
         }
         .product-cat-tag {
-            font-size: 10px; background: #f5efe8; color: var(--secondary-brown); padding: 2px 6px; border-radius: 8px; width: fit-content; font-weight: bold;
+            font-size: 11px; background: #f5efe8; color: var(--secondary-brown); padding: 2px 8px; border-radius: 8px; width: fit-content; font-weight: bold;
         }
-        .product-title { font-size: 15px; font-weight: 700; margin: 2px 0; color: #222; }
-        .product-price { color: var(--secondary-brown); font-weight: 700; font-size: 14px; }
-        .stock-tag { font-size: 11px; }
+        .product-title { font-size: 15px; font-weight: 700; margin: 4px 0; color: #222; }
+        .product-price { color: var(--secondary-brown); font-weight: 700; font-size: 15px; }
+        .stock-tag { font-size: 12px; }
         .in-stock { color: var(--success); }
         .out-stock { color: var(--danger); font-weight: bold; }
 
         .btn {
-            background-color: var(--primary-brown); color: white; border: none; padding: 8px 10px;
+            background-color: var(--primary-brown); color: white; border: none; padding: 10px 12px;
             border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px;
         }
         .btn:hover { background-color: var(--secondary-brown); }
         .btn:disabled { background-color: #ccc; cursor: not-allowed; }
@@ -134,7 +137,6 @@
         .summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
         .summary-total { font-size: 20px; font-weight: 700; border-top: 2px solid var(--primary-brown); padding-top: 10px; color: var(--primary-brown); }
 
-        /* بطاقات الطلبات الواردة للأدمن */
         .order-card {
             background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); border-right: 5px solid var(--primary-brown);
@@ -146,12 +148,10 @@
         .status-delivered { background: #e8f5e9; color: #2e7d32; }
         .status-cancelled { background: #ffebee; color: #c62828; }
 
-        /* شبكة الأقسام بصفحة التحكم */
         .admin-cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
         .admin-cat-card { border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; background: #fff; position: relative; }
         .admin-cat-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; }
 
-        /* نافذة التأكيد المنبثقة */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
@@ -164,7 +164,7 @@
         }
         .modal-icon { font-size: 60px; color: var(--success); margin-bottom: 15px; }
 
-        footer { text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 14px; }
+        footer { text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 14px; margin-top: auto; }
     </style>
 </head>
 <body>
@@ -193,14 +193,14 @@
     </header>
 
     <div class="container">
-        <!-- 1. صفحة المتجر والمعرض المتجاور -->
+        <!-- 1. صفحة المتجر والمعرض الموسع -->
         <section id="shop-page" class="page-section active">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">أحدث الإكسسوارات</h2>
             
-            <!-- أشرطة الأقسام الديناميكية مع الصور -->
+            <!-- أشرطة الأقسام -->
             <div class="categories-scroll" id="categoriesBar"></div>
 
-            <!-- شبكة عرض القطع (واحدة بجانب الأخرى) -->
+            <!-- شبكة المعروضات الأفقية (قطع بجانب بعضها) -->
             <div class="products-grid" id="productsGrid">جاري تحمِيل المعروضات...</div>
         </section>
 
@@ -387,7 +387,6 @@
 
     <footer>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</footer>
 
-    <!-- البرمجة بالكامل -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -469,7 +468,6 @@
             localStorage.setItem('madar_saved_categories', JSON.stringify(categories));
         }
 
-        // 1. مزامنة الفايربيس للقطع
         try {
             onSnapshot(collection(db, "products"), (snapshot) => {
                 if(!snapshot.empty) {
@@ -481,7 +479,6 @@
             }, () => { renderProducts(); renderAdminInventory(); });
         } catch(e) {}
 
-        // 2. مزامنة الأقسام
         try {
             onSnapshot(collection(db, "categories"), (snapshot) => {
                 if(!snapshot.empty) {
@@ -498,7 +495,6 @@
             });
         } catch(e) {}
 
-        // 3. مزامنة الطلبات
         try {
             const ordersQuery = query(collection(db, "orders"));
             onSnapshot(ordersQuery, (snapshot) => {
@@ -508,7 +504,6 @@
             });
         } catch(e) {}
 
-        // 4. مزامنة أجور التوصيل
         onSnapshot(doc(db, "settings", "store_config"), (docSnap) => {
             if(docSnap.exists() && docSnap.data().fee !== undefined) {
                 deliveryFee = docSnap.data().fee;
@@ -657,7 +652,6 @@
             showPage('shop');
         };
 
-        // عرض المعروضات متجاورة بجانب بعضها البعض
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
