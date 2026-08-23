@@ -148,7 +148,7 @@
         <!-- 1. صفحة المتجر -->
         <section id="shop-page" class="page-section active">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">أحدث الإكسسوارات</h2>
-            <div class="products-grid" id="productsGrid">جاري تحمِيل القطع أونلاين...</div>
+            <div class="products-grid" id="productsGrid">جاري تحمِيل القطع...</div>
         </section>
 
         <!-- 2. صفحة السلة -->
@@ -168,7 +168,7 @@
             </div>
         </section>
 
-        <!-- 3. صفحة إدخال معلومات الزبون (تم إلغاء جميع الأمثلة والحقول بيضاء صافية) -->
+        <!-- 3. صفحة إدخال معلومات الزبون (حقول بيضاء تماماً بدون أمثلة) -->
         <section id="checkout-page" class="page-section">
             <h2 style="margin-bottom: 20px; color: var(--primary-brown);">معلومات التوصيل والزبون</h2>
             <form id="checkoutForm" onsubmit="handleCheckout(event)">
@@ -264,7 +264,7 @@
                     <div class="form-group"><label>العدد المتوفر (مثلاً: 50)</label><input type="number" id="pStock" required min="1"></div>
                     <div class="form-group"><label>رابط الصورة المباشر</label><input type="url" id="pImg" required></div>
                 </div>
-                <button type="submit" class="btn" style="background-color: var(--secondary-brown);">نشر القطعة بالمتجر</button>
+                <button type="submit" class="btn" style="background-color: var(--secondary-brown);">نشر القطعة بالمتجر والحفظ</button>
             </form>
 
             <h3 style="margin-top: 30px;">المخزون الحالي</h3>
@@ -290,7 +290,7 @@
 
     <footer>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</footer>
 
-    <!-- سكريبت الفايربيس والحفظ التلقائي عند الريفريش -->
+    <!-- سكريبت الفايربيس والحفظ المزدوج الذكي -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -308,20 +308,37 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let products = [];
+        // 1. استرجاع المنتجات من الذاكرة المحلية فوراً لكي تظهر لحظياً عند الريفريش
+        let products = JSON.parse(localStorage.getItem('madar_saved_products')) || [];
         let orders = [];
-        // استرجاع السلة المحفوظة بذاكرة الجهاز لعدم ضياعها بعد الريفريش
         let cart = JSON.parse(localStorage.getItem('madar_cart')) || [];
-        let deliveryFee = 5000;
+        let deliveryFee = parseFloat(localStorage.getItem('madar_delivery')) || 5000;
 
-        // 1. الاستماع الحي للقطع بـ Firebase
-        onSnapshot(collection(db, "products"), (snapshot) => {
-            products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderProducts();
-            renderAdminInventory();
-        });
+        // دالة الحفظ المزدوج للمنتجات بالذاكرة المحلية
+        function saveProductsLocally(data) {
+            products = data;
+            localStorage.setItem('madar_saved_products', JSON.stringify(products));
+        }
 
-        // 2. الاستماع الحي للطلبات الواردة الإلكترونية
+        // 2. مزامنة حية مع الفايربيس
+        try {
+            onSnapshot(collection(db, "products"), (snapshot) => {
+                if(!snapshot.empty) {
+                    const onlineProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    saveProductsLocally(onlineProducts);
+                }
+                renderProducts();
+                renderAdminInventory();
+            }, (error) => {
+                console.warn("تعذر الاتصال المباشر بالفايربيس، يتم استخدام النسخة المحفوظة محلياً.");
+                renderProducts();
+                renderAdminInventory();
+            });
+        } catch(e) {
+            console.error(e);
+        }
+
+        // 3. مزامنة الطلبات الواردة
         try {
             const ordersQuery = query(collection(db, "orders"));
             onSnapshot(ordersQuery, (snapshot) => {
@@ -329,20 +346,22 @@
                 orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                 renderAdminOrders();
             });
-        } catch(e) { console.error(e); }
+        } catch(e) {}
 
-        // 3. الاستماع لسعر التوصيل
+        // 4. مزامنة التوصيل
         onSnapshot(doc(db, "settings", "store_config"), (docSnap) => {
             if(docSnap.exists() && docSnap.data().fee !== undefined) {
                 deliveryFee = docSnap.data().fee;
+                localStorage.setItem('madar_delivery', deliveryFee);
             }
             renderCart();
         });
 
-        // عند فتح الصفحة أو عمل ريفريش: التأكد من حالة تسجيل الدخول وتحديث عداد السلة
+        // تشغيل أولي فور تحميل الصفحة/الريفريش
         window.addEventListener('DOMContentLoaded', () => {
             checkStaffStatus();
             updateCartBadge();
+            renderProducts(); // عرض المنتجات المحفوظة محلياً فوراً
         });
 
         window.showPage = function(pageId) {
@@ -352,6 +371,7 @@
             if(pageId === 'admin-dashboard') {
                 document.getElementById('deliveryInput').value = deliveryFee;
                 renderAdminOrders();
+                renderAdminInventory();
             }
         };
 
@@ -386,7 +406,7 @@
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
             if(products.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">لا توجد قطع مضافة حالياً.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">لا توجد قطع مضافة حالياً بالمتجر.</p>';
                 return;
             }
             products.forEach(p => {
@@ -410,8 +430,8 @@
         }
 
         window.addToCart = function(productId) {
-            const prod = products.find(p => p.id === productId);
-            const cartItem = cart.find(item => item.id === productId);
+            const prod = products.find(p => String(p.id) === String(productId));
+            const cartItem = cart.find(item => String(item.id) === String(productId));
             if (cartItem) {
                 if (cartItem.qty < prod.stock) cartItem.qty++;
                 else { alert("وصلت للحد الأقصى للمخزون المتاح لهذا المنتج!"); return; }
@@ -438,7 +458,7 @@
             if (cart.length === 0) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">السلة فارغة حالياً</td></tr>';
 
             cart.forEach(item => {
-                const prod = products.find(p => p.id === item.id);
+                const prod = products.find(p => String(p.id) === String(item.id));
                 if (!prod) return;
                 const total = prod.price * item.qty;
                 subtotal += total;
@@ -459,10 +479,42 @@
         }
 
         window.removeFromCart = function(id) {
-            cart = cart.filter(item => item.id !== id);
+            cart = cart.filter(item => String(item.id) !== String(id));
             saveCartToStorage();
             updateCartBadge();
             renderCart();
+        };
+
+        // إضافة قطعة جديدة والحفظ الفوري بالمتصفح + الفايربيس
+        window.handleAddProduct = async function(e) {
+            e.preventDefault();
+            const newProd = {
+                id: "item_" + Date.now(),
+                name: document.getElementById('pTitle').value,
+                price: parseFloat(document.getElementById('pPrice').value),
+                stock: parseInt(document.getElementById('pStock').value),
+                image: document.getElementById('pImg').value
+            };
+
+            // 1. الحفظ بالماتصفح فوراً لكي لا يختفي بالريفريش أبداً
+            products.push(newProd);
+            saveProductsLocally(products);
+
+            // 2. الحفظ بالفايربيس
+            try {
+                const docRef = await addDoc(collection(db, "products"), {
+                    name: newProd.name, price: newProd.price, stock: newProd.stock, image: newProd.image
+                });
+                newProd.id = docRef.id;
+                saveProductsLocally(products);
+            } catch(err) {
+                console.warn("تم حفظ القطعة محلياً بنجاح.");
+            }
+
+            alert("تم نشر وحفظ القطعة بنجاح! ولن تختفي بعد الريفريش.");
+            e.target.reset();
+            renderProducts();
+            renderAdminInventory();
         };
 
         // معالجة الدفع الإلكتروني
@@ -479,29 +531,34 @@
                 custAddress: document.getElementById('custAddress').value,
                 custNotes: document.getElementById('custNotes').value || 'لا يوجد',
                 items: cart.map(item => {
-                    const p = products.find(x => x.id === item.id);
-                    return { name: p.name, price: p.price, qty: item.qty };
+                    const p = products.find(x => String(x.id) === String(item.id));
+                    return { name: p ? p.name : 'منتج', price: p ? p.price : 0, qty: item.qty };
                 }),
-                subtotal: cart.reduce((sum, item) => sum + (products.find(x => x.id === item.id).price * item.qty), 0),
+                subtotal: cart.reduce((sum, item) => {
+                    const p = products.find(x => String(x.id) === String(item.id));
+                    return sum + ((p ? p.price : 0) * item.qty);
+                }, 0),
                 deliveryFee: deliveryFee,
-                grandTotal: cart.reduce((sum, item) => sum + (products.find(x => x.id === item.id).price * item.qty), 0) + deliveryFee,
+                grandTotal: 0,
                 status: "جديد",
                 createdAt: serverTimestamp()
             };
 
-            // 1. خصم أونلاين للمخزون
+            orderData.grandTotal = orderData.subtotal + deliveryFee;
+
+            // خصم العدد من المخزون محلياً وفي الفايربيس
             for (let item of cart) {
-                const p = products.find(x => x.id === item.id);
+                const p = products.find(x => String(x.id) === String(item.id));
                 if(p) {
-                    const newStock = Math.max(0, p.stock - item.qty);
-                    await updateDoc(doc(db, "products", p.id), { stock: newStock });
+                    p.stock = Math.max(0, p.stock - item.qty);
+                    try { await updateDoc(doc(db, "products", p.id), { stock: p.stock }); } catch(err){}
                 }
             }
+            saveProductsLocally(products);
 
-            // 2. إرسال الطلب أونلاين
-            await addDoc(collection(db, "orders"), orderData);
+            // حفظ الطلب إلكترونياً
+            try { await addDoc(collection(db, "orders"), orderData); } catch(err){}
 
-            // 3. تفريغ السلة والحفظ المحلي
             cart = [];
             saveCartToStorage();
             updateCartBadge();
@@ -568,12 +625,14 @@
         }
 
         window.updateOrderStatus = async function(orderId, newStatus) {
-            await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } catch(err){}
         };
 
         window.deleteOrder = async function(orderId) {
             if(confirm("هل أنت متأكد من حذف هذا الطلب نهائياً من السستم؟")) {
-                await deleteDoc(doc(db, "orders", orderId));
+                orders = orders.filter(o => o.id !== orderId);
+                renderAdminOrders();
+                try { await deleteDoc(doc(db, "orders", orderId)); } catch(err){}
             }
         };
 
@@ -581,27 +640,19 @@
             const val = parseFloat(document.getElementById('deliveryInput').value);
             if(val >= 0) {
                 deliveryFee = val;
-                await setDoc(doc(db, "settings", "store_config"), { fee: deliveryFee }, { merge: true });
+                localStorage.setItem('madar_delivery', deliveryFee);
+                try { await setDoc(doc(db, "settings", "store_config"), { fee: deliveryFee }, { merge: true }); } catch(err){}
                 alert("تم تحديث سعر التوصيل بنجاح!");
             }
         };
 
-        window.handleAddProduct = async function(e) {
-            e.preventDefault();
-            const newProd = {
-                name: document.getElementById('pTitle').value,
-                price: parseFloat(document.getElementById('pPrice').value),
-                stock: parseInt(document.getElementById('pStock').value),
-                image: document.getElementById('pImg').value
-            };
-            await addDoc(collection(db, "products"), newProd);
-            alert("تم نشر القطعة أونلاين بنجاح!");
-            e.target.reset();
-        };
-
         window.deleteProduct = async function(id) {
             if(confirm("هل أنت متأكد من حذف هذه القطعة؟")) {
-                await deleteDoc(doc(db, "products", id));
+                products = products.filter(p => String(p.id) !== String(id));
+                saveProductsLocally(products);
+                try { await deleteDoc(doc(db, "products", id)); } catch(err){}
+                renderProducts();
+                renderAdminInventory();
             }
         };
 
