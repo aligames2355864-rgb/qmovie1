@@ -16,7 +16,7 @@
             --bg-white: #FFFFFF;
             --text-color: #333333;
             --danger: #d32f2f;
-            --success: #388e3c;
+            --success: #2e7d32;
             --gold: #FFC107;
         }
 
@@ -90,6 +90,19 @@
         .summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
         .summary-total { font-size: 20px; font-weight: 700; border-top: 2px solid var(--primary-brown); padding-top: 10px; color: var(--primary-brown); }
 
+        /* النافذة المنبثقة للتأكيد */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; padding: 30px; border-radius: 15px; text-align: center; max-width: 450px; width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .modal-icon { font-size: 60px; color: var(--success); margin-bottom: 15px; }
+
         footer { text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 14px; }
     </style>
 </head>
@@ -103,17 +116,14 @@
                 <li><a onclick="showPage('shop')"><i class="fa-solid fa-store"></i> المعرض</a></li>
                 <li><a onclick="showPage('cart')" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i> السلة <span class="cart-badge" id="cartBadge">0</span></a></li>
                 
-                <!-- زر لوحة الموظف (يختفي ويظهر تلقائياً حسب اليوزر) -->
                 <li id="navStaffBtn" style="display: none;">
                     <a onclick="showPage('admin-dashboard')" class="staff-nav-btn"><i class="fa-solid fa-sliders"></i> لوحة الموظف</a>
                 </li>
 
-                <!-- زر تسجيل الدخول الموحد -->
                 <li id="navLoginBtn">
                     <a onclick="showPage('login')"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</a>
                 </li>
                 
-                <!-- زر خروج الموظف -->
                 <li id="navLogoutBtn" style="display: none;">
                     <a onclick="logoutStaff()" style="color: #ff8a80;"><i class="fa-solid fa-power-off"></i> خروج</a>
                 </li>
@@ -122,10 +132,10 @@
     </header>
 
     <div class="container">
-        <!-- 1. صفحة المتجر للزبائن -->
+        <!-- 1. صفحة المتجر -->
         <section id="shop-page" class="page-section active">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">أحدث الإكسسوارات</h2>
-            <div class="products-grid" id="productsGrid">جاري تحمِيل القطع...</div>
+            <div class="products-grid" id="productsGrid">جاري تحمِيل القطع أونلاين...</div>
         </section>
 
         <!-- 2. صفحة السلة -->
@@ -166,7 +176,7 @@
             </form>
         </section>
 
-        <!-- 4. صفحة تسجيل الدخول الموحدة -->
+        <!-- 4. صفحة تسجيل الدخول -->
         <section id="login-page" class="page-section">
             <h2 style="margin-bottom: 20px; color: var(--primary-brown); text-align: center;">تسجيل الدخول للموقع</h2>
             <form onsubmit="handleGeneralLogin(event)" style="max-width: 400px; margin: 0 auto; background: #fdfbf9; padding: 25px; border-radius: 10px; border: 1px solid var(--light-brown);">
@@ -182,16 +192,24 @@
             </form>
         </section>
 
-        <!-- 5. صفحة الأدمن والتحكم بالمنتجات (منفصلة تماماً) -->
+        <!-- 5. لوحة تحكم الأدمن -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
                 <button class="btn" style="width: auto; background-color: #666;" onclick="showPage('shop')">الرجوع للمتجر</button>
             </div>
 
+            <!-- زر تفعيل واقتران التليجرام -->
+            <div style="background: #e1f5fe; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #0088cc;">
+                <h3 style="color: #0088cc;"><i class="fa-brands fa-telegram"></i> ربط وتفعيل إشعارات التليجرام</h3>
+                <p style="font-size: 13px; color: #555; margin: 5px 0 10px 0;">اضغط هذا الزر لمرة واحدة بعد مراسلة البوت بـ <b>/start</b> من حسابك وحساب طيبة لربط وصول الطلبات فوراً:</p>
+                <button class="btn" style="background-color: #0088cc;" onclick="syncTelegramUsers()">تنسيق واقتران حسابات التليجرام الآن <i class="fa-solid fa-sync"></i></button>
+                <div id="telegramStatus" style="margin-top: 10px; font-weight: bold; font-size: 14px;"></div>
+            </div>
+
             <!-- إعداد أجور التوصيل -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
-                <h3><i class="fa-solid fa-truck"></i> تعديل سعر التوصيل الحتلي</h3>
+                <h3><i class="fa-solid fa-truck"></i> سعر التوصيل الحالي</h3>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <input type="number" id="deliveryInput" placeholder="أدخل سعر التوصيل">
                     <button class="btn" style="width: 150px;" onclick="updateDeliveryFee()">حفظ السعر</button>
@@ -199,33 +217,46 @@
             </div>
 
             <!-- إضافة قطعة جديدة -->
-            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة للمتجر</h3>
+            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة</h3>
             <form onsubmit="handleAddProduct(event)" style="margin-top: 15px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
                 <div class="form-row">
-                    <div class="form-group"><label>اسم الإكسسوار</label><input type="text" id="pTitle" required></div>
+                    <div class="form-group"><label>اسم القطعة</label><input type="text" id="pTitle" required></div>
                     <div class="form-group"><label>السعر (دينار)</label><input type="number" id="pPrice" required></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>العدد المتوفر (مثلاً: 50)</label><input type="number" id="pStock" required min="1"></div>
                     <div class="form-group"><label>رابط الصورة المباشر</label><input type="url" id="pImg" required placeholder="https://site.com/image.jpg"></div>
                 </div>
-                <button type="submit" class="btn" style="background-color: var(--secondary-brown);">نشر القطعة بالمتجر والحفظ</button>
+                <button type="submit" class="btn" style="background-color: var(--secondary-brown);">نشر القطعة بالمتجر</button>
             </form>
 
-            <h3 style="margin-top: 30px;">إدارة المخزون والقطع الحالية</h3>
+            <h3 style="margin-top: 30px;">المخزون الحالي</h3>
             <table class="cart-table" style="margin-top: 10px;">
-                <thead><tr><th>اسم القطعة</th><th>السعر</th><th>المتبقي</th><th>إجراء</th></tr></thead>
+                <thead><tr><th>اسم القطعة</th><th>السعر</th><th>المتبقي</th><th>حذف</th></tr></thead>
                 <tbody id="adminInventory"></tbody>
             </table>
         </section>
     </div>
 
+    <!-- نافذة تأكيد استلام الطلب للزبون -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fa-solid fa-circle-check modal-icon"></i>
+            <h2 style="color: var(--primary-brown); margin-bottom: 10px;">تم استلام طلبك بنجاح! ✨</h2>
+            <p style="font-size: 16px; color: #555; margin-bottom: 20px; line-height: 1.6;">
+                شكراً لتسوقك من متجر مدار.<br>
+                <strong>تم تسجيل الطلب وبدء المعالجة، انتظر اتصالنا لتأكيد التفاصيل والتوصيل 📞🚚</strong>
+            </p>
+            <button class="btn" style="background-color: var(--success);" onclick="closeSuccessModal()">تم / حسناً</button>
+        </div>
+    </div>
+
     <footer>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</footer>
 
-    <!-- سكريبت الفايربيس والمحرك المحلي -->
+    <!-- سكريبت الفايربيس والتليجرام الحقيقي -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCKvjwxDo99u7OKMfvtyYZoZOFH2e-LGsI",
@@ -241,41 +272,34 @@
         const db = getFirestore(app);
         const TELEGRAM_BOT_TOKEN = "8980828063:AAH3X7K_CtqFQQJPPdQUumaOt2mh1ZMf44E";
 
-        // مصفوفة المنتجات (تبدأ بالبيانات المحفوظة بالمحل أولاً كي لا تختفي إطلاقاً)
-        let products = JSON.parse(localStorage.getItem('madar_local_products')) || [
-            { id: "1", name: "قلادة مدار الفضية", price: 15000, stock: 50, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400" }
-        ];
+        let products = [];
         let cart = [];
-        let deliveryFee = parseFloat(localStorage.getItem('madar_delivery')) || 5000;
+        let deliveryFee = 5000;
 
-        // مزامنة حية مع الفايربيس وحفظ محلي احتياطي
-        try {
-            onSnapshot(collection(db, "products"), (snapshot) => {
-                if(!snapshot.empty) {
-                    products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    localStorage.setItem('madar_local_products', JSON.stringify(products));
-                    renderProducts();
-                    renderAdminInventory();
-                }
-            }, (err) => {
-                console.log("استخدام الحفظ المحلي الاحتياطي للمنتجات.");
-            });
-        } catch(e) {}
+        // 1. الاستماع المباشر للمنتجات في الفايربيس (تحديث فوري لجميع الزبائن)
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderProducts();
+            renderAdminInventory();
+        });
 
-        // التحقق من الجلسة عند فتح الموقع
+        // 2. الاستماع المباشر لسعر التوصيل
+        onSnapshot(doc(db, "settings", "delivery"), (docSnap) => {
+            if(docSnap.exists()) deliveryFee = docSnap.data().fee || 5000;
+            renderCart();
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             checkStaffStatus();
-            renderProducts();
         });
 
         window.showPage = function(pageId) {
             document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(`${pageId}-page`).classList.add('active');
             if(pageId === 'cart') renderCart();
-            if(pageId === 'admin-dashboard') renderAdminInventory();
         };
 
-        // تسجيل الدخول الذكي للجميع
+        // تسجيل الدخول
         window.handleGeneralLogin = function(e) {
             e.preventDefault();
             const user = document.getElementById('loginUsername').value.trim();
@@ -283,40 +307,33 @@
             if (user === "aliteba11mdr") {
                 localStorage.setItem('madar_is_staff', 'true');
                 checkStaffStatus();
-                alert("أهلاً بكِ طيبة / علاوي! تم تفعيل وضع الموظف وإظهار اللوحة بالشريط العلوي ✨");
+                alert("أهلاً بكِ طيبة / علاوي! تم فتح لوحة التحكم ✨");
                 showPage('admin-dashboard');
             } else {
-                alert(`أهلاً وسهلاً بك (${user}) في متجر مدار للإكسسوارات!`);
+                alert(`أهلاً وسهلاً بك (${user}) في متجر مدار!`);
                 showPage('shop');
             }
         };
 
         function checkStaffStatus() {
             const isStaff = localStorage.getItem('madar_is_staff') === 'true';
-            if (isStaff) {
-                document.getElementById('navStaffBtn').style.display = 'block';
-                document.getElementById('navLogoutBtn').style.display = 'block';
-                document.getElementById('navLoginBtn').style.display = 'none';
-            } else {
-                document.getElementById('navStaffBtn').style.display = 'none';
-                document.getElementById('navLogoutBtn').style.display = 'none';
-                document.getElementById('navLoginBtn').style.display = 'block';
-            }
+            document.getElementById('navStaffBtn').style.display = isStaff ? 'block' : 'none';
+            document.getElementById('navLogoutBtn').style.display = isStaff ? 'block' : 'none';
+            document.getElementById('navLoginBtn').style.display = isStaff ? 'none' : 'block';
         }
 
         window.logoutStaff = function() {
             localStorage.removeItem('madar_is_staff');
             checkStaffStatus();
-            alert("تم تسجيل الخروج من وضع الموظف.");
             showPage('shop');
         };
 
-        // عرض المنتجات للزبون
+        // عرض المنتجات للزبائن
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
             if(products.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">لا توجد قطع مضافة حالياً بالمتجر.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">لا توجد قطع مضافة حالياً.</p>';
                 return;
             }
             products.forEach(p => {
@@ -339,14 +356,13 @@
             });
         }
 
-        // السلة والدفع
         window.addToCart = function(productId) {
             const prod = products.find(p => p.id === productId);
             const cartItem = cart.find(item => item.id === productId);
 
             if (cartItem) {
                 if (cartItem.qty < prod.stock) cartItem.qty++;
-                else { alert("وصلت للحد الأقصى للمخزون المتاح لهذه القطعة!"); return; }
+                else { alert("وصلت للحد الأقصى للمخزون المتاح لهذا المنتج!"); return; }
             } else {
                 cart.push({ id: productId, qty: 1 });
             }
@@ -393,7 +409,7 @@
             renderCart();
         };
 
-        // خصم التوفر وإرسال الطلب
+        // معالجة الدفع وإظهار الرسالة
         window.handleCheckout = async function(e) {
             e.preventDefault();
             if(cart.length === 0) { alert("السلة فارغة!"); return; }
@@ -415,19 +431,18 @@
 
             const grandTotal = orderData.subtotal + deliveryFee;
 
-            // خصم محلي + فايربيس
+            // 1. خصم أونلاين من الفايربيس (يتحدث مباشرة للجميع)
             for (let item of cart) {
                 const p = products.find(x => x.id === item.id);
                 if(p) {
-                    p.stock = Math.max(0, p.stock - item.qty);
-                    try { await updateDoc(doc(db, "products", p.id), { stock: p.stock }); } catch(err){}
+                    const newStock = Math.max(0, p.stock - item.qty);
+                    await updateDoc(doc(db, "products", p.id), { stock: newStock });
                 }
             }
-            localStorage.setItem('madar_local_products', JSON.stringify(products));
 
-            // إرسال للتليجرام
+            // 2. إرسال الرسالة للتليجرام
             const message = `🛍️ *طلب جديد - متجر مدار* 🛍️\n\n` +
-                `👤 *اسم الزبون:* ${orderData.name}\n` +
+                `👤 *الزبون:* ${orderData.name}\n` +
                 `📸 *انستغرام:* ${orderData.insta}\n` +
                 `📞 *رقم الهاتف:* ${orderData.phone1}\n` +
                 `📞 *رقم ثاني:* ${orderData.phone2}\n` +
@@ -437,89 +452,110 @@
                 `📦 *القطع المطلوبة:*\n- ${orderData.items.join('\n- ')}\n\n` +
                 `💰 *المجموع:* ${orderData.subtotal.toLocaleString()} د.ع\n` +
                 `🚚 *التوصيل:* ${deliveryFee.toLocaleString()} د.ع\n` +
-                `💳 *الإجمالي النهائي:* ${grandTotal.toLocaleString()} د.ع`;
+                `💳 *الإجمالي النهائئ:* ${grandTotal.toLocaleString()} د.ع`;
 
             sendToTelegram(message);
 
+            // 3. تفريغ وإظهار نافذة التأكيد
             cart = [];
             updateCartBadge();
             document.getElementById('checkoutForm').reset();
-            alert("تم إرسال الطلب بنجاح وخصم القطع من المخزون!");
-            renderProducts();
+            document.getElementById('successModal').classList.add('active');
+        };
+
+        window.closeSuccessModal = function() {
+            document.getElementById('successModal').classList.remove('active');
             showPage('shop');
         };
 
+        // اقتران وحفظ التليجرام بالفايربيس
+        window.syncTelegramUsers = async function() {
+            const statusEl = document.getElementById('telegramStatus');
+            statusEl.style.color = "black";
+            statusEl.innerText = "جاري البحث عن حسابات الكادر...";
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
+                const data = await res.json();
+                
+                if(data.ok && data.result.length > 0) {
+                    let count = 0;
+                    for(let update of data.result) {
+                        let id = null;
+                        if(update.message && update.message.chat) id = update.message.chat.id;
+                        else if(update.channel_post && update.channel_post.chat) id = update.channel_post.chat.id;
+
+                        if(id) {
+                            await setDoc(doc(db, "telegram_users", String(id)), { chatId: id, active: true });
+                            count++;
+                        }
+                    }
+                    statusEl.style.color = "green";
+                    statusEl.innerText = `تم ربط واقتران (${count}) حساب تليجرام بنجاح! الإشعارات مفعّلة الآن.`;
+                } else {
+                    statusEl.style.color = "red";
+                    statusEl.innerText = "لم نجد رسائل جديدة. يرجى الدخول للبوت من التليجرام وإرسال /start ثم الضغط هنا مجدداً.";
+                }
+            } catch(e) {
+                statusEl.style.color = "red";
+                statusEl.innerText = "حدث خطأ أثناء الربط بالتليجرام.";
+            }
+        };
+
+        // إرسال الإشعار لجميع الحسابات المقترنة
         async function sendToTelegram(text) {
             try {
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
-                const data = await response.json();
+                const snap = await getDocs(collection(db, "telegram_users"));
+                let chatIds = [];
+                snap.forEach(d => { if(d.data().chatId) chatIds.push(d.data().chatId); });
 
-                if (data.ok && data.result && data.result.length > 0) {
-                    const chatIds = new Set();
-                    data.result.forEach(update => {
-                        if (update.message && update.message.chat) chatIds.add(update.message.chat.id);
-                        else if (update.channel_post && update.channel_post.chat) chatIds.add(update.channel_post.chat.id);
-                        else if (update.my_chat_member && update.my_chat_member.chat) chatIds.add(update.my_chat_member.chat.id);
-                    });
+                // احتياط: لو لم تكن القاعدة مسجلة يقرأ أحدث التحديثات مباشرة
+                if(chatIds.length === 0) {
+                    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
+                    const data = await res.json();
+                    if(data.ok && data.result) {
+                        data.result.forEach(u => { if(u.message) chatIds.push(u.message.chat.id); });
+                    }
+                }
 
-                    chatIds.forEach(async (chatId) => {
-                        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'Markdown' })
-                        });
+                chatIds = [...new Set(chatIds)];
+
+                for(let id of chatIds) {
+                    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: id, text: text, parse_mode: 'Markdown' })
                     });
                 }
             } catch (err) {}
         }
 
-        // إضافة قطعة جديدة وتخزينها لعدم الضياع عند التحديث
+        // إضافة قطعة جديدة أونلاين بالفايربيس مباشرة
         window.handleAddProduct = async function(e) {
             e.preventDefault();
             const newProd = {
-                id: "prod_" + Date.now(),
                 name: document.getElementById('pTitle').value,
                 price: parseFloat(document.getElementById('pPrice').value),
                 stock: parseInt(document.getElementById('pStock').value),
                 image: document.getElementById('pImg').value
             };
 
-            // 1. الحفظ بالماتصفح فوراً (لعدم الاختفاء مطلقاً)
-            products.push(newProd);
-            localStorage.setItem('madar_local_products', JSON.stringify(products));
-
-            // 2. الحفظ بالفايربيس أونلاين
-            try {
-                const docRef = await addDoc(collection(db, "products"), {
-                    name: newProd.name, price: newProd.price, stock: newProd.stock, image: newProd.image
-                });
-                newProd.id = docRef.id;
-            } catch(err) {
-                console.log("تم الحفظ محلياً بنجاح.");
-            }
-
-            alert("تم نشر وحفظ القطعة بنجاح ولن تختفي بعد التحديث!");
+            await addDoc(collection(db, "products"), newProd);
+            alert("تم نشر القطعة أونلاين بنجاح بدون ريفريش!");
             e.target.reset();
-            renderProducts();
-            renderAdminInventory();
         };
 
-        window.updateDeliveryFee = function() {
+        // تحديث سعر التوصيل بالفايربيس
+        window.updateDeliveryFee = async function() {
             const val = parseFloat(document.getElementById('deliveryInput').value);
             if(val >= 0) {
-                deliveryFee = val;
-                localStorage.setItem('madar_delivery', deliveryFee);
-                alert("تم تحديث سعر التوصيل بنجاح.");
+                await setDoc(doc(db, "settings", "delivery"), { fee: val });
+                alert("تم تحديث سعر التوصيل لكل المستخدمين فوراً!");
             }
         };
 
         window.deleteProduct = async function(id) {
             if(confirm("هل أنت متأكد من حذف هذه القطعة؟")) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('madar_local_products', JSON.stringify(products));
-                try { await deleteDoc(doc(db, "products", id)); } catch(err){}
-                renderProducts();
-                renderAdminInventory();
+                await deleteDoc(doc(db, "products", id));
             }
         };
 
