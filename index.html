@@ -23,7 +23,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
         body { background-color: #F9F9F9; color: var(--text-color); display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* الشريط العلوي البني */
+        /* الشريط العلوي */
         header {
             background-color: var(--primary-brown); color: white; padding: 15px 5%;
             display: flex; justify-content: space-between; align-items: center;
@@ -78,7 +78,7 @@
             background: var(--primary-brown); color: white; border-color: var(--primary-brown);
         }
 
-        /* شبكة عرض القطع بالعرض متجتورة */
+        /* شبكة عرض القطع */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -328,7 +328,7 @@
                 </div>
             </div>
 
-            <!-- إضافة قطعة جديدة مع إمكانية نشرها في أي قسم أو عدة أقسام -->
+            <!-- إضافة قطعة جديدة -->
             <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة</h3>
             <form onsubmit="handleAddProduct(event)" style="margin-top: 15px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
                 <div class="form-row">
@@ -407,10 +407,7 @@
         const db = getFirestore(app);
 
         let products = JSON.parse(localStorage.getItem('madar_saved_products')) || [];
-        let categories = JSON.parse(localStorage.getItem('madar_saved_categories')) || [
-            { id: "c1", name: "قلائد", image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=100" },
-            { id: "c2", name: "أساور", image: "https://images.unsplash.com/photo-1611591475140-4388584aa37a?w=100" }
-        ];
+        let categories = JSON.parse(localStorage.getItem('madar_saved_categories')) || [];
         let orders = [];
         let cart = JSON.parse(localStorage.getItem('madar_cart')) || [];
         let deliveryFee = parseFloat(localStorage.getItem('madar_delivery')) || 5000;
@@ -470,34 +467,25 @@
             localStorage.setItem('madar_saved_categories', JSON.stringify(categories));
         }
 
+        // مزامنة المنتجات حية مع الفايربيس
         try {
             onSnapshot(collection(db, "products"), (snapshot) => {
-                if(!snapshot.empty) {
-                    const onlineProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    saveProductsLocally(onlineProducts);
-                }
+                const onlineProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                saveProductsLocally(onlineProducts);
                 renderProducts();
                 renderAdminInventory();
-            }, () => { renderProducts(); renderAdminInventory(); });
+            });
         } catch(e) {}
 
+        // المزامنة الحية الحقيقية للأقسام مع الفايربيس (تم إصلاح مشكلة عدم الانعكاس عند الحذف)
         try {
             onSnapshot(collection(db, "categories"), (snapshot) => {
-                if(!snapshot.empty) {
-                    const onlineCats = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    saveCategoriesLocally(onlineCats);
-                } else {
-                    if (localStorage.getItem('madar_saved_categories_cleared') === 'true') {
-                        categories = [];
-                    }
-                }
+                const onlineCats = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                saveCategoriesLocally(onlineCats);
                 renderCategoriesBar();
                 renderAdminCategories();
                 updateCategoryDropdown();
-            }, () => {
-                renderCategoriesBar();
-                renderAdminCategories();
-                updateCategoryDropdown();
+                renderProducts();
             });
         } catch(e) {}
 
@@ -556,7 +544,6 @@
             });
         }
 
-        /* خيارات مربعات التحديد واختيار الأقسام المتاحة */
         function updateCategoryDropdown() {
             const box = document.getElementById('pCategoryCheckboxes');
             if(!box) return;
@@ -587,29 +574,15 @@
                 return;
             }
 
-            localStorage.removeItem('madar_saved_categories_cleared');
-
-            const newCat = {
-                id: "cat_" + Date.now(),
-                name: title,
-                image: uploadedCatBase64Image
-            };
-
-            categories.push(newCat);
-            saveCategoriesLocally(categories);
-
             try {
-                const docRef = await addDoc(collection(db, "categories"), { name: newCat.name, image: newCat.image });
-                newCat.id = docRef.id;
-                saveCategoriesLocally(categories);
-            } catch(err){}
+                await addDoc(collection(db, "categories"), { name: title, image: uploadedCatBase64Image });
+                alert("تمت إضافة القسم بنجاح!");
+            } catch(err){
+                alert("حدث خطأ أثناء الإضافة، حاول ثانية.");
+            }
 
-            alert("تمت إضافة القسم بنجاح!");
             e.target.reset();
             uploadedCatBase64Image = "";
-            renderCategoriesBar();
-            renderAdminCategories();
-            updateCategoryDropdown();
         };
 
         function renderAdminCategories() {
@@ -632,13 +605,9 @@
 
         window.deleteCategory = async function(id) {
             if(confirm("هل أنت متأكد من حذف هذا القسم؟")) {
-                categories = categories.filter(c => String(c.id) !== String(id));
-                saveCategoriesLocally(categories);
-                if(categories.length === 0) localStorage.setItem('madar_saved_categories_cleared', 'true');
-                try { await deleteDoc(doc(db, "categories", id)); } catch(err){}
-                renderCategoriesBar();
-                renderAdminCategories();
-                updateCategoryDropdown();
+                try { 
+                    await deleteDoc(doc(db, "categories", id)); 
+                } catch(err){}
             }
         };
 
@@ -650,19 +619,11 @@
 
             if (confirm("هل أنت متأكد من حذف جميع الأقسام بالكامل؟")) {
                 const catsToDelete = [...categories];
-                categories = [];
-                saveCategoriesLocally(categories);
-                localStorage.setItem('madar_saved_categories_cleared', 'true');
                 selectedCategory = "الكل";
 
                 for (let c of catsToDelete) {
                     try { await deleteDoc(doc(db, "categories", c.id)); } catch(err){}
                 }
-
-                renderCategoriesBar();
-                renderAdminCategories();
-                updateCategoryDropdown();
-                renderProducts();
                 alert("تم حذف جميع الأقسام بنجاح!");
             }
         };
@@ -818,7 +779,6 @@
             const catList = selectedCats.length > 0 ? selectedCats : ["عام"];
 
             const newProd = {
-                id: "item_" + Date.now(),
                 name: document.getElementById('pTitle').value,
                 category: catList,
                 price: parseFloat(document.getElementById('pPrice').value),
@@ -826,27 +786,16 @@
                 image: uploadedBase64Image
             };
 
-            products.push(newProd);
-            saveProductsLocally(products);
-
             try {
-                const docRef = await addDoc(collection(db, "products"), {
-                    name: newProd.name,
-                    category: newProd.category,
-                    price: newProd.price,
-                    stock: newProd.stock,
-                    image: newProd.image
-                });
-                newProd.id = docRef.id;
-                saveProductsLocally(products);
-            } catch(err) {}
+                await addDoc(collection(db, "products"), newProd);
+                alert("تم إدراج ونشر القطعة بنجاح بالأقسام المحددة!");
+            } catch(err) {
+                alert("حدث خطأ أثناء رفع المنتج!");
+            }
 
-            alert("تم إدراج ونشر القطعة بنجاح بالأقسام المحددة!");
             e.target.reset();
             uploadedBase64Image = "";
             document.getElementById('imgPreviewBox').style.display = 'none';
-            renderProducts();
-            renderAdminInventory();
         };
 
         window.handleCheckout = async function(e) {
@@ -884,7 +833,6 @@
                     try { await updateDoc(doc(db, "products", p.id), { stock: p.stock }); } catch(err){}
                 }
             }
-            saveProductsLocally(products);
 
             try { await addDoc(collection(db, "orders"), orderData); } catch(err){}
 
@@ -958,8 +906,6 @@
 
         window.deleteOrder = async function(orderId) {
             if(confirm("هل أنت متأكد من حذف هذا الطلب نهائياً من السستم؟")) {
-                orders = orders.filter(o => o.id !== orderId);
-                renderAdminOrders();
                 try { await deleteDoc(doc(db, "orders", orderId)); } catch(err){}
             }
         };
@@ -976,11 +922,7 @@
 
         window.deleteProduct = async function(id) {
             if(confirm("هل أنت متأكد من حذف هذه القطعة؟")) {
-                products = products.filter(p => String(p.id) !== String(id));
-                saveProductsLocally(products);
                 try { await deleteDoc(doc(db, "products", id)); } catch(err){}
-                renderProducts();
-                renderAdminInventory();
             }
         };
 
