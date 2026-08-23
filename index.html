@@ -51,7 +51,7 @@
             color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; border: 2px solid var(--primary-brown);
         }
 
-        /* الحاوية الرئيسية تم توسيعها لتستوعب القطع أفقياً */
+        /* الحاوية الرئيسية الموسعة */
         .container {
             width: 95%; max-width: 1250px; margin: 25px auto; padding: 25px; flex: 1;
             background-color: var(--bg-white); border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.03);
@@ -78,7 +78,7 @@
             background: var(--primary-brown); color: white; border-color: var(--primary-brown);
         }
 
-        /* شبكة عرض القطع - أفقية ومصفوفة بجانب بعضها البعض */
+        /* شبكة عرض القطع بأسلوب متعدد الأعمدة افقياً */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -87,7 +87,6 @@
             margin-top: 15px;
         }
 
-        /* استجابة الشاشات الصغيرة (الموبايل): قطعتان بجانب بعضهما */
         @media (max-width: 600px) {
             .container { width: 98%; padding: 12px; }
             .products-grid {
@@ -193,14 +192,12 @@
     </header>
 
     <div class="container">
-        <!-- 1. صفحة المتجر والمعرض الموسع -->
+        <!-- 1. صفحة المتجر -->
         <section id="shop-page" class="page-section active">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">أحدث الإكسسوارات</h2>
             
-            <!-- أشرطة الأقسام -->
             <div class="categories-scroll" id="categoriesBar"></div>
 
-            <!-- شبكة المعروضات الأفقية (قطع بجانب بعضها) -->
             <div class="products-grid" id="productsGrid">جاري تحمِيل المعروضات...</div>
         </section>
 
@@ -297,7 +294,7 @@
                 <div id="ordersListContainer">جاري تحميل الطلبات أونلاين...</div>
             </div>
 
-            <!-- قسم إدارة الأقسام وصورها -->
+            <!-- قسم إدارة الأقسام وصورها ومع زر حذف الكل -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3><i class="fa-solid fa-layer-group"></i> إدارة الأقسام والتصنيفات وصورها</h3>
                 <form onsubmit="handleAddCategory(event)" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
@@ -314,7 +311,10 @@
                     <button type="submit" class="btn" style="background-color: var(--secondary-brown); width: 200px;">إضافة القسم</button>
                 </form>
 
-                <h4 style="margin-top: 15px;">الأقسام الحالية:</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px dashed #ddd; padding-top: 15px;">
+                    <h4>الأقسام الحالية:</h4>
+                    <button onclick="deleteAllCategories()" style="background: #ffebee; color: var(--danger); border: 1px solid var(--danger); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;"><i class="fa-solid fa-trash-can"></i> حذف جميع الأقسام</button>
+                </div>
                 <div class="admin-cats-grid" id="adminCategoriesGrid"></div>
             </div>
 
@@ -484,6 +484,10 @@
                 if(!snapshot.empty) {
                     const onlineCats = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     saveCategoriesLocally(onlineCats);
+                } else {
+                    if (localStorage.getItem('madar_saved_categories_cleared') === 'true') {
+                        categories = [];
+                    }
                 }
                 renderCategoriesBar();
                 renderAdminCategories();
@@ -570,6 +574,8 @@
                 return;
             }
 
+            localStorage.removeItem('madar_saved_categories_cleared');
+
             const newCat = {
                 id: "cat_" + Date.now(),
                 name: title,
@@ -596,6 +602,10 @@
         function renderAdminCategories() {
             const grid = document.getElementById('adminCategoriesGrid');
             grid.innerHTML = '';
+            if(categories.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; color: #888; text-align: center; font-size: 13px; padding: 10px;">لا توجد أقسام حالياً.</p>';
+                return;
+            }
             categories.forEach(c => {
                 grid.innerHTML += `
                     <div class="admin-cat-card">
@@ -611,10 +621,37 @@
             if(confirm("هل أنت متأكد من حذف هذا القسم؟")) {
                 categories = categories.filter(c => String(c.id) !== String(id));
                 saveCategoriesLocally(categories);
+                if(categories.length === 0) localStorage.setItem('madar_saved_categories_cleared', 'true');
                 try { await deleteDoc(doc(db, "categories", id)); } catch(err){}
                 renderCategoriesBar();
                 renderAdminCategories();
                 updateCategoryDropdown();
+            }
+        };
+
+        // دالة حذف كل الأقسام بلمسة واحدة
+        window.deleteAllCategories = async function() {
+            if (categories.length === 0) {
+                alert("لا توجد أقسام لحذفها!");
+                return;
+            }
+
+            if (confirm("هل أنت متأكد من حذف جميع الأقسام بالكامل؟")) {
+                const catsToDelete = [...categories];
+                categories = [];
+                saveCategoriesLocally(categories);
+                localStorage.setItem('madar_saved_categories_cleared', 'true');
+                selectedCategory = "الكل";
+
+                for (let c of catsToDelete) {
+                    try { await deleteDoc(doc(db, "categories", c.id)); } catch(err){}
+                }
+
+                renderCategoriesBar();
+                renderAdminCategories();
+                updateCategoryDropdown();
+                renderProducts();
+                alert("تم حذف جميع الأقسام بنجاح!");
             }
         };
 
