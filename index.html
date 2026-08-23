@@ -75,13 +75,14 @@
         .btn {
             background-color: var(--primary-brown); color: white; border: none; padding: 10px 15px;
             border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn:hover { background-color: var(--secondary-brown); }
         .btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; background-color: #fff; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
@@ -90,7 +91,19 @@
         .summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
         .summary-total { font-size: 20px; font-weight: 700; border-top: 2px solid var(--primary-brown); padding-top: 10px; color: var(--primary-brown); }
 
-        /* النافذة المنبثقة للتأكيد */
+        /* بطاقات الطلبات الواردة للأدمن */
+        .order-card {
+            background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 18px; margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); border-right: 5px solid var(--primary-brown);
+        }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .order-status-badge { padding: 4px 10px; border-radius: 15px; font-size: 13px; font-weight: bold; }
+        .status-new { background: #fff9c4; color: #f57f17; }
+        .status-processing { background: #e1f5fe; color: #0288d1; }
+        .status-delivered { background: #e8f5e9; color: #2e7d32; }
+        .status-cancelled { background: #ffebee; color: #c62828; }
+
+        /* نافذة التأكيد المنبثقة */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
@@ -108,7 +121,7 @@
 </head>
 <body>
 
-    <!-- الشريط العلوي البني -->
+    <!-- الشريط العلوي -->
     <header>
         <div class="logo" onclick="showPage('shop')"><i class="fa-solid fa-gem"></i> مَــدَار | MADAR</div>
         <nav>
@@ -155,24 +168,47 @@
             </div>
         </section>
 
-        <!-- 3. صفحة إدخال معلومات الزبون والتوصيل -->
+        <!-- 3. صفحة إدخال معلومات الزبون (تم إلغاء جميع الأمثلة والحقول بيضاء صافية) -->
         <section id="checkout-page" class="page-section">
             <h2 style="margin-bottom: 20px; color: var(--primary-brown);">معلومات التوصيل والزبون</h2>
             <form id="checkoutForm" onsubmit="handleCheckout(event)">
                 <div class="form-row">
-                    <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="custName" required placeholder="مثال: علي حسام"></div>
-                    <div class="form-group"><label>يوزر الانستغرام *</label><input type="text" id="custInsta" required placeholder="@username"></div>
+                    <div class="form-group">
+                        <label>الاسم الكامل *</label>
+                        <input type="text" id="custName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>يوزر الانستغرام *</label>
+                        <input type="text" id="custInsta" required>
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>رقم الهاتف الأساسي *</label><input type="tel" id="custPhone1" required placeholder="07700000000"></div>
-                    <div class="form-group"><label>رقم هاتف احتياطي</label><input type="tel" id="custPhone2" placeholder="اختياري"></div>
+                    <div class="form-group">
+                        <label>رقم الهاتف الأساسي *</label>
+                        <input type="tel" id="custPhone1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>رقم هاتف احتياطي</label>
+                        <input type="tel" id="custPhone2">
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>المحافظة *</label><input type="text" id="custGov" required placeholder="أدخل اسم المحافظة (مثلاً: البصرة، بغداد...)"></div>
-                    <div class="form-group"><label>عنوان البيت التفصيلي *</label><input type="text" id="custAddress" required placeholder="المنطقة، الشارع، قرب علامة دالة"></div>
+                    <div class="form-group">
+                        <label>المحافظة *</label>
+                        <input type="text" id="custGov" required>
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان البيت التفصيلي *</label>
+                        <input type="text" id="custAddress" required>
+                    </div>
                 </div>
-                <div class="form-group"><label>ملاحظات إضافية</label><textarea id="custNotes" rows="3" placeholder="أي تفاصيل خاصة بالطلب..."></textarea></div>
-                <button type="submit" class="btn" style="background-color: var(--success);"><i class="fa-solid fa-paper-plane"></i> تأكيد وإرسال الطلب</button>
+                <div class="form-group">
+                    <label>ملاحظات إضافية</label>
+                    <textarea id="custNotes" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn" style="background-color: var(--primary-brown); padding: 12px; font-size: 16px;">
+                    <i class="fa-solid fa-check-circle"></i> تأكيد وإرسال الطلب إلكترونياً
+                </button>
             </form>
         </section>
 
@@ -182,36 +218,37 @@
             <form onsubmit="handleGeneralLogin(event)" style="max-width: 400px; margin: 0 auto; background: #fdfbf9; padding: 25px; border-radius: 10px; border: 1px solid var(--light-brown);">
                 <div class="form-group">
                     <label>اسم المستخدم / يوزر الانستغرام</label>
-                    <input type="text" id="loginUsername" required placeholder="ادخل اليوزر الخاص بيك">
+                    <input type="text" id="loginUsername" required>
                 </div>
                 <div class="form-group">
                     <label>كلمة المرور / الرمز الخاص</label>
-                    <input type="password" id="loginPassword" placeholder="******">
+                    <input type="password" id="loginPassword">
                 </div>
                 <button type="submit" class="btn">دخول</button>
             </form>
         </section>
 
-        <!-- 5. لوحة تحكم الأدمن -->
+        <!-- 5. لوحة تحكم الأدمن والطلبات الإلكترونية -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
                 <button class="btn" style="width: auto; background-color: #666;" onclick="showPage('shop')">الرجوع للمتجر</button>
             </div>
 
-            <!-- زر تفعيل واقتران التليجرام -->
-            <div style="background: #e1f5fe; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #0088cc;">
-                <h3 style="color: #0088cc;"><i class="fa-brands fa-telegram"></i> ربط وتفعيل إشعارات التليجرام</h3>
-                <p style="font-size: 13px; color: #555; margin: 5px 0 10px 0;">اضغط هذا الزر لمرة واحدة بعد مراسلة البوت بـ <b>/start</b> من حسابك وحساب طيبة لربط وصول الطلبات فوراً:</p>
-                <button class="btn" style="background-color: #0088cc;" onclick="syncTelegramUsers()">تنسيق واقتران حسابات التليجرام الآن <i class="fa-solid fa-sync"></i></button>
-                <div id="telegramStatus" style="margin-top: 10px; font-weight: bold; font-size: 14px;"></div>
+            <!-- قسم الطلبات الواردة الإلكترونية -->
+            <div style="background: #fdfbf9; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--light-brown);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: var(--primary-brown);"><i class="fa-solid fa-inbox"></i> الطلبات الواردة الإلكترونية</h3>
+                    <span id="ordersCountBadge" style="background: var(--primary-brown); color: white; padding: 4px 10px; border-radius: 12px; font-size: 13px;">0 طلب</span>
+                </div>
+                <div id="ordersListContainer">جاري تحميل الطلبات أونلاين...</div>
             </div>
 
             <!-- إعداد أجور التوصيل -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3><i class="fa-solid fa-truck"></i> سعر التوصيل الحالي</h3>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <input type="number" id="deliveryInput" placeholder="أدخل سعر التوصيل">
+                    <input type="number" id="deliveryInput">
                     <button class="btn" style="width: 150px;" onclick="updateDeliveryFee()">حفظ السعر</button>
                 </div>
             </div>
@@ -225,7 +262,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>العدد المتوفر (مثلاً: 50)</label><input type="number" id="pStock" required min="1"></div>
-                    <div class="form-group"><label>رابط الصورة المباشر</label><input type="url" id="pImg" required placeholder="https://site.com/image.jpg"></div>
+                    <div class="form-group"><label>رابط الصورة المباشر</label><input type="url" id="pImg" required></div>
                 </div>
                 <button type="submit" class="btn" style="background-color: var(--secondary-brown);">نشر القطعة بالمتجر</button>
             </form>
@@ -245,7 +282,7 @@
             <h2 style="color: var(--primary-brown); margin-bottom: 10px;">تم استلام طلبك بنجاح! ✨</h2>
             <p style="font-size: 16px; color: #555; margin-bottom: 20px; line-height: 1.6;">
                 شكراً لتسوقك من متجر مدار.<br>
-                <strong>تم تسجيل الطلب وبدء المعالجة، انتظر اتصالنا لتأكيد التفاصيل والتوصيل 📞🚚</strong>
+                <strong>تم تسجيل الطلب أونلاين وبدء المعالجة، انتظر اتصالنا لتأكيد التفاصيل والتوصيل 📞🚚</strong>
             </p>
             <button class="btn" style="background-color: var(--success);" onclick="closeSuccessModal()">تم / حسناً</button>
         </div>
@@ -253,10 +290,10 @@
 
     <footer>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</footer>
 
-    <!-- سكريبت الفايربيس والتليجرام الحقيقي -->
+    <!-- سكريبت الفايربيس والحفظ التلقائي عند الريفريش -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCKvjwxDo99u7OKMfvtyYZoZOFH2e-LGsI",
@@ -270,44 +307,61 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const TELEGRAM_BOT_TOKEN = "8980828063:AAH3X7K_CtqFQQJPPdQUumaOt2mh1ZMf44E";
 
         let products = [];
-        let cart = [];
+        let orders = [];
+        // استرجاع السلة المحفوظة بذاكرة الجهاز لعدم ضياعها بعد الريفريش
+        let cart = JSON.parse(localStorage.getItem('madar_cart')) || [];
         let deliveryFee = 5000;
 
-        // 1. الاستماع المباشر للمنتجات في الفايربيس (تحديث فوري لجميع الزبائن)
+        // 1. الاستماع الحي للقطع بـ Firebase
         onSnapshot(collection(db, "products"), (snapshot) => {
             products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts();
             renderAdminInventory();
         });
 
-        // 2. الاستماع المباشر لسعر التوصيل
-        onSnapshot(doc(db, "settings", "delivery"), (docSnap) => {
-            if(docSnap.exists()) deliveryFee = docSnap.data().fee || 5000;
+        // 2. الاستماع الحي للطلبات الواردة الإلكترونية
+        try {
+            const ordersQuery = query(collection(db, "orders"));
+            onSnapshot(ordersQuery, (snapshot) => {
+                orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                renderAdminOrders();
+            });
+        } catch(e) { console.error(e); }
+
+        // 3. الاستماع لسعر التوصيل
+        onSnapshot(doc(db, "settings", "store_config"), (docSnap) => {
+            if(docSnap.exists() && docSnap.data().fee !== undefined) {
+                deliveryFee = docSnap.data().fee;
+            }
             renderCart();
         });
 
+        // عند فتح الصفحة أو عمل ريفريش: التأكد من حالة تسجيل الدخول وتحديث عداد السلة
         window.addEventListener('DOMContentLoaded', () => {
             checkStaffStatus();
+            updateCartBadge();
         });
 
         window.showPage = function(pageId) {
             document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(`${pageId}-page`).classList.add('active');
             if(pageId === 'cart') renderCart();
+            if(pageId === 'admin-dashboard') {
+                document.getElementById('deliveryInput').value = deliveryFee;
+                renderAdminOrders();
+            }
         };
 
-        // تسجيل الدخول
         window.handleGeneralLogin = function(e) {
             e.preventDefault();
             const user = document.getElementById('loginUsername').value.trim();
-
             if (user === "aliteba11mdr") {
                 localStorage.setItem('madar_is_staff', 'true');
                 checkStaffStatus();
-                alert("أهلاً بكِ طيبة / علاوي! تم فتح لوحة التحكم ✨");
+                alert("أهلاً بكِ طيبة / علاوي! تم فتح لوحة التحكم الإلكترونية ✨");
                 showPage('admin-dashboard');
             } else {
                 alert(`أهلاً وسهلاً بك (${user}) في متجر مدار!`);
@@ -328,7 +382,6 @@
             showPage('shop');
         };
 
-        // عرض المنتجات للزبائن
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
@@ -359,16 +412,20 @@
         window.addToCart = function(productId) {
             const prod = products.find(p => p.id === productId);
             const cartItem = cart.find(item => item.id === productId);
-
             if (cartItem) {
                 if (cartItem.qty < prod.stock) cartItem.qty++;
                 else { alert("وصلت للحد الأقصى للمخزون المتاح لهذا المنتج!"); return; }
             } else {
                 cart.push({ id: productId, qty: 1 });
             }
+            saveCartToStorage();
             updateCartBadge();
             alert(`تمت إضافة (${prod.name}) إلى السلة.`);
         };
+
+        function saveCartToStorage() {
+            localStorage.setItem('madar_cart', JSON.stringify(cart));
+        }
 
         function updateCartBadge() {
             document.getElementById('cartBadge').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -378,7 +435,6 @@
             const tbody = document.getElementById('cartItems');
             tbody.innerHTML = '';
             let subtotal = 0;
-
             if (cart.length === 0) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">السلة فارغة حالياً</td></tr>';
 
             cart.forEach(item => {
@@ -386,7 +442,6 @@
                 if (!prod) return;
                 const total = prod.price * item.qty;
                 subtotal += total;
-
                 tbody.innerHTML += `
                     <tr>
                         <td>${prod.name}</td>
@@ -405,33 +460,36 @@
 
         window.removeFromCart = function(id) {
             cart = cart.filter(item => item.id !== id);
+            saveCartToStorage();
             updateCartBadge();
             renderCart();
         };
 
-        // معالجة الدفع وإظهار الرسالة
+        // معالجة الدفع الإلكتروني
         window.handleCheckout = async function(e) {
             e.preventDefault();
             if(cart.length === 0) { alert("السلة فارغة!"); return; }
 
             const orderData = {
-                name: document.getElementById('custName').value,
-                insta: document.getElementById('custInsta').value,
-                phone1: document.getElementById('custPhone1').value,
-                phone2: document.getElementById('custPhone2').value || 'لا يوجد',
-                gov: document.getElementById('custGov').value,
-                address: document.getElementById('custAddress').value,
-                notes: document.getElementById('custNotes').value || 'لا يوجد',
+                custName: document.getElementById('custName').value,
+                custInsta: document.getElementById('custInsta').value,
+                custPhone1: document.getElementById('custPhone1').value,
+                custPhone2: document.getElementById('custPhone2').value || 'لا يوجد',
+                custGov: document.getElementById('custGov').value,
+                custAddress: document.getElementById('custAddress').value,
+                custNotes: document.getElementById('custNotes').value || 'لا يوجد',
                 items: cart.map(item => {
                     const p = products.find(x => x.id === item.id);
-                    return `${p.name} (عدد: ${item.qty})`;
+                    return { name: p.name, price: p.price, qty: item.qty };
                 }),
-                subtotal: cart.reduce((sum, item) => sum + (products.find(x => x.id === item.id).price * item.qty), 0)
+                subtotal: cart.reduce((sum, item) => sum + (products.find(x => x.id === item.id).price * item.qty), 0),
+                deliveryFee: deliveryFee,
+                grandTotal: cart.reduce((sum, item) => sum + (products.find(x => x.id === item.id).price * item.qty), 0) + deliveryFee,
+                status: "جديد",
+                createdAt: serverTimestamp()
             };
 
-            const grandTotal = orderData.subtotal + deliveryFee;
-
-            // 1. خصم أونلاين من الفايربيس (يتحدث مباشرة للجميع)
+            // 1. خصم أونلاين للمخزون
             for (let item of cart) {
                 const p = products.find(x => x.id === item.id);
                 if(p) {
@@ -440,24 +498,12 @@
                 }
             }
 
-            // 2. إرسال الرسالة للتليجرام
-            const message = `🛍️ *طلب جديد - متجر مدار* 🛍️\n\n` +
-                `👤 *الزبون:* ${orderData.name}\n` +
-                `📸 *انستغرام:* ${orderData.insta}\n` +
-                `📞 *رقم الهاتف:* ${orderData.phone1}\n` +
-                `📞 *رقم ثاني:* ${orderData.phone2}\n` +
-                `📍 *المحافظة:* ${orderData.gov}\n` +
-                `🏡 *العنوان:* ${orderData.address}\n` +
-                `📝 *ملاحظات:* ${orderData.notes}\n\n` +
-                `📦 *القطع المطلوبة:*\n- ${orderData.items.join('\n- ')}\n\n` +
-                `💰 *المجموع:* ${orderData.subtotal.toLocaleString()} د.ع\n` +
-                `🚚 *التوصيل:* ${deliveryFee.toLocaleString()} د.ع\n` +
-                `💳 *الإجمالي النهائئ:* ${grandTotal.toLocaleString()} د.ع`;
+            // 2. إرسال الطلب أونلاين
+            await addDoc(collection(db, "orders"), orderData);
 
-            sendToTelegram(message);
-
-            // 3. تفريغ وإظهار نافذة التأكيد
+            // 3. تفريغ السلة والحفظ المحلي
             cart = [];
+            saveCartToStorage();
             updateCartBadge();
             document.getElementById('checkoutForm').reset();
             document.getElementById('successModal').classList.add('active');
@@ -468,68 +514,78 @@
             showPage('shop');
         };
 
-        // اقتران وحفظ التليجرام بالفايربيس
-        window.syncTelegramUsers = async function() {
-            const statusEl = document.getElementById('telegramStatus');
-            statusEl.style.color = "black";
-            statusEl.innerText = "جاري البحث عن حسابات الكادر...";
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
-                const data = await res.json();
-                
-                if(data.ok && data.result.length > 0) {
-                    let count = 0;
-                    for(let update of data.result) {
-                        let id = null;
-                        if(update.message && update.message.chat) id = update.message.chat.id;
-                        else if(update.channel_post && update.channel_post.chat) id = update.channel_post.chat.id;
+        // عرض الطلبات الإلكترونية للأدمن
+        function renderAdminOrders() {
+            const container = document.getElementById('ordersListContainer');
+            document.getElementById('ordersCountBadge').innerText = `${orders.length} طلبات`;
+            container.innerHTML = '';
 
-                        if(id) {
-                            await setDoc(doc(db, "telegram_users", String(id)), { chatId: id, active: true });
-                            count++;
-                        }
-                    }
-                    statusEl.style.color = "green";
-                    statusEl.innerText = `تم ربط واقتران (${count}) حساب تليجرام بنجاح! الإشعارات مفعّلة الآن.`;
-                } else {
-                    statusEl.style.color = "red";
-                    statusEl.innerText = "لم نجد رسائل جديدة. يرجى الدخول للبوت من التليجرام وإرسال /start ثم الضغط هنا مجدداً.";
-                }
-            } catch(e) {
-                statusEl.style.color = "red";
-                statusEl.innerText = "حدث خطأ أثناء الربط بالتليجرام.";
+            if(orders.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#777; padding:15px;">لا توجد طلبات واردة حتى الآن.</p>';
+                return;
+            }
+
+            orders.forEach(ord => {
+                let statusClass = 'status-new';
+                if(ord.status === 'قيد التجهيز') statusClass = 'status-processing';
+                if(ord.status === 'تم التسليم') statusClass = 'status-delivered';
+                if(ord.status === 'ملغي') statusClass = 'status-cancelled';
+
+                const itemsFormatted = ord.items ? ord.items.map(i => `• ${i.name} (عدد: ${i.qty})`).join('<br>') : '';
+
+                container.innerHTML += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <strong>الزبون: ${ord.custName}</strong> (${ord.custInsta})
+                            </div>
+                            <div>
+                                <span class="order-status-badge ${statusClass}">${ord.status || 'جديد'}</span>
+                            </div>
+                        </div>
+                        <div style="font-size:14px; line-height:1.6; margin-bottom:10px;">
+                            📞 <b>الهاتف:</b> ${ord.custPhone1} | <b>احتياطي:</b> ${ord.custPhone2}<br>
+                            📍 <b>المحافظة:</b> ${ord.custGov} | <b>العنوان:</b> ${ord.custAddress}<br>
+                            📝 <b>ملاحظات:</b> ${ord.custNotes}<br>
+                            <div style="background:#f9f9f9; padding:8px; border-radius:5px; margin:8px 0;">
+                                <b>القطع المطلوبة:</b><br>${itemsFormatted}
+                            </div>
+                            💳 <b>المبلغ الإجمالي:</b> <span style="color:var(--primary-brown); font-weight:bold;">${Number(ord.grandTotal || 0).toLocaleString()} د.ع</span> (القطع: ${Number(ord.subtotal || 0).toLocaleString()} + التوصيل: ${Number(ord.deliveryFee || 0).toLocaleString()})
+                        </div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <label style="font-size:13px; font-weight:bold;">تغيير حالة الطلب:</label>
+                            <select style="width:auto; padding:5px; font-size:13px;" onchange="updateOrderStatus('${ord.id}', this.value)">
+                                <option value="جديد" ${ord.status === 'جديد' ? 'selected' : ''}>جديد 🟡</option>
+                                <option value="قيد التجهيز" ${ord.status === 'قيد التجهيز' ? 'selected' : ''}>قيد التجهيز 🔵</option>
+                                <option value="تم التسليم" ${ord.status === 'تم التسليم' ? 'selected' : ''}>تم التسليم 🟢</option>
+                                <option value="ملغي" ${ord.status === 'ملغي' ? 'selected' : ''}>ملغي 🔴</option>
+                            </select>
+                            <button onclick="deleteOrder('${ord.id}')" style="background:none; border:none; color:red; cursor:pointer; font-size:13px; margin-right:auto;"><i class="fa-solid fa-trash"></i> حذف الطلب</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.updateOrderStatus = async function(orderId, newStatus) {
+            await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+        };
+
+        window.deleteOrder = async function(orderId) {
+            if(confirm("هل أنت متأكد من حذف هذا الطلب نهائياً من السستم؟")) {
+                await deleteDoc(doc(db, "orders", orderId));
             }
         };
 
-        // إرسال الإشعار لجميع الحسابات المقترنة
-        async function sendToTelegram(text) {
-            try {
-                const snap = await getDocs(collection(db, "telegram_users"));
-                let chatIds = [];
-                snap.forEach(d => { if(d.data().chatId) chatIds.push(d.data().chatId); });
+        window.updateDeliveryFee = async function() {
+            const val = parseFloat(document.getElementById('deliveryInput').value);
+            if(val >= 0) {
+                deliveryFee = val;
+                await setDoc(doc(db, "settings", "store_config"), { fee: deliveryFee }, { merge: true });
+                alert("تم تحديث سعر التوصيل بنجاح!");
+            }
+        };
 
-                // احتياط: لو لم تكن القاعدة مسجلة يقرأ أحدث التحديثات مباشرة
-                if(chatIds.length === 0) {
-                    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
-                    const data = await res.json();
-                    if(data.ok && data.result) {
-                        data.result.forEach(u => { if(u.message) chatIds.push(u.message.chat.id); });
-                    }
-                }
-
-                chatIds = [...new Set(chatIds)];
-
-                for(let id of chatIds) {
-                    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: id, text: text, parse_mode: 'Markdown' })
-                    });
-                }
-            } catch (err) {}
-        }
-
-        // إضافة قطعة جديدة أونلاين بالفايربيس مباشرة
         window.handleAddProduct = async function(e) {
             e.preventDefault();
             const newProd = {
@@ -538,19 +594,9 @@
                 stock: parseInt(document.getElementById('pStock').value),
                 image: document.getElementById('pImg').value
             };
-
             await addDoc(collection(db, "products"), newProd);
-            alert("تم نشر القطعة أونلاين بنجاح بدون ريفريش!");
+            alert("تم نشر القطعة أونلاين بنجاح!");
             e.target.reset();
-        };
-
-        // تحديث سعر التوصيل بالفايربيس
-        window.updateDeliveryFee = async function() {
-            const val = parseFloat(document.getElementById('deliveryInput').value);
-            if(val >= 0) {
-                await setDoc(doc(db, "settings", "delivery"), { fee: val });
-                alert("تم تحديث سعر التوصيل لكل المستخدمين فوراً!");
-            }
         };
 
         window.deleteProduct = async function(id) {
