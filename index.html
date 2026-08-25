@@ -144,11 +144,23 @@
 
         footer { text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto; }
 
-        /* طباعة الوصل */
+        /* الإصلاح الشامل والكامل للطباعة */
+        #printableInvoice { display: none; }
+
         @media print {
-            body * { visibility: hidden; }
-            #printableInvoice, #printableInvoice * { visibility: visible; }
-            #printableInvoice { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+            body { background: #fff !important; margin: 0 !important; padding: 0 !important; color: #000 !important; }
+            header, nav, .container, footer, .modal-overlay { display: none !important; }
+            
+            #printableInvoice {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+            #printableInvoice * { visibility: visible !important; }
         }
     </style>
 </head>
@@ -294,7 +306,7 @@
                 <div class="stat-card"><div>الطلبات المكتملة 🟢</div><div class="stat-num" id="statCompletedOrders">0</div></div>
             </div>
 
-            <!-- جديد: جدول ترتيب القطع الأكثر مبيعاً إلى الأقل مبيعاً (خاص بالموظفين) -->
+            <!-- جدول ترتيب القطع الأكثر مبيعاً -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-fire" style="color: #f57f17;"></i> ترتيب القطع الأكثر مبيعاً (خاص بالموظفين)</h3>
                 <table class="cart-table">
@@ -407,7 +419,8 @@
         </section>
     </div>
 
-    <div id="printableInvoice" style="display: none; font-family: 'Tajawal', sans-serif;"></div>
+    <!-- صندوق الوصل المخصص للطباعة -->
+    <div id="printableInvoice"></div>
 
     <div id="successModal" class="modal-overlay">
         <div class="modal-box">
@@ -899,29 +912,30 @@
             });
         }
 
+        // طباعة الوصل المصححة
         window.printInvoice = function(orderId) {
             const ord = orders.find(o => o.id === orderId);
             if(!ord) return;
             const printBox = document.getElementById('printableInvoice');
-            const itemsHTML = ord.items ? ord.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${Number(i.price).toLocaleString()} د.ع</td></tr>`).join('') : '';
+            const itemsHTML = ord.items ? ord.items.map(i => `<tr><td style="padding:6px; border:1px solid #000;">${i.name}</td><td style="padding:6px; border:1px solid #000; text-align:center;">${i.qty}</td><td style="padding:6px; border:1px solid #000; text-align:left;">${Number(i.price).toLocaleString()} د.ع</td></tr>`).join('') : '';
 
             let qrHTML = '';
             if(ord.giftMessage) {
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(ord.giftMessage)}`;
-                qrHTML = `<div style="text-align:center; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;"><p style="font-size:11px; margin-bottom:4px;">امسح الرمز لسماع البصمة / الرسالة 🎁</p><img src="${qrUrl}"></div>`;
+                qrHTML = `<div style="text-align:center; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;"><p style="font-size:11px; margin-bottom:4px;">امسح الرمز لسماع البصمة / الرسالة 🎁</p><img src="${qrUrl}" style="width:100px; height:100px;"></div>`;
             }
 
             printBox.innerHTML = `
-                <div style="max-width:400px; margin:0 auto; border:2px solid #4A3525; padding:20px; border-radius:10px;">
+                <div style="max-width:400px; margin:0 auto; border:2px solid #4A3525; padding:20px; border-radius:10px; background:#fff; color:#000;">
                     <div style="text-align:center; border-bottom:2px solid #4A3525; padding-bottom:10px; margin-bottom:15px;">
-                        <h2 style="color:#4A3525;">مَــدَار | MADAR</h2>
+                        <h2 style="color:#4A3525; margin-bottom:4px;">مَــدَار | MADAR</h2>
                         <p style="font-size:12px;">وصل طلبية وتوصيل رسمي</p>
                     </div>
-                    <div style="font-size:13px; line-height:1.6; margin-bottom:15px;">
+                    <div style="font-size:13px; line-height:1.6; margin-bottom:15px; text-align:right;">
                         <b>اسم الزبون:</b> ${ord.custName} (${ord.custInsta})<br>
                         <b>رقم الهاتف:</b> ${ord.custPhone1}<br>
                         <b>العنوان:</b> ${ord.custGov} - ${ord.custAddress}<br>
-                        <b>ملاحظات:</b> ${ord.custNotes}
+                        <b>ملاحظات:</b> ${ord.custNotes || 'لا يوجد'}
                     </div>
                     <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:15px;" border="1">
                         <thead><tr style="background:#f0ebe6;"><th>القطعة</th><th>العدد</th><th>السعر</th></tr></thead>
@@ -933,10 +947,12 @@
                     ${qrHTML}
                 </div>
             `;
-            window.print();
+            
+            setTimeout(() => {
+                window.print();
+            }, 250);
         };
 
-        // حساب الإحصائيات وجدول أكثر القطع مبيعاً بترتيب تنازلي (خاص بالموظفين)
         function updateAnalytics() {
             let totalRevenue = 0; 
             let completedCount = 0;
@@ -964,7 +980,6 @@
             document.getElementById('statOrdersCount').innerText = orders.length;
             document.getElementById('statCompletedOrders').innerText = completedCount;
 
-            // تحويل الخارطة إلى مصفوفة وترتيبها تنازلياً حسب عدد القطع المباعة
             let sortedProducts = Object.keys(productSalesMap).map(name => ({
                 name: name,
                 qty: productSalesMap[name].qty,
