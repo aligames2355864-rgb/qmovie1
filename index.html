@@ -80,7 +80,6 @@
             display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; width: 100%; margin-top: 15px;
         }
 
-        /* تحسين التجاوب للهواتف والأيباد */
         @media (max-width: 768px) {
             header { padding: 8px 12px; justify-content: center; }
             header .logo { font-size: 18px; width: 100%; justify-content: center; margin-bottom: 4px; }
@@ -149,7 +148,6 @@
         .stat-card { background: #fdfbf9; border: 1px solid var(--light-brown); border-radius: 10px; padding: 15px; text-align: center; }
         .stat-num { font-size: 22px; font-weight: bold; color: var(--primary-brown); margin-top: 5px; }
 
-        /* الشاشة الإجبارية لتسجيل الدخول */
         .mandatory-modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(40, 25, 15, 0.92); backdrop-filter: blur(8px);
@@ -171,22 +169,11 @@
             text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto;
             display: flex; justify-content: space-between; align-items: center; padding-left: 5%; padding-right: 5%; flex-wrap: wrap; gap: 8px;
         }
-
-        #printableInvoice { display: none; }
-        @media print {
-            body { background: #fff !important; margin: 0 !important; padding: 0 !important; color: #000 !important; }
-            header, nav, .container, footer, .modal-overlay, .mandatory-modal-overlay { display: none !important; }
-            #printableInvoice {
-                display: block !important; position: absolute !important; left: 0 !important; top: 0 !important;
-                width: 100% !important; margin: 0 !important; padding: 10px !important;
-            }
-            #printableInvoice * { visibility: visible !important; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- نافذة تسجيل الدخول الإجبارية كشرط لدخول المتجر -->
+    <!-- نافذة تسجيل الدخول الإجبارية -->
     <div id="mandatoryLoginModal" class="mandatory-modal-overlay">
         <div class="mandatory-modal-box">
             <i class="fa-solid fa-gem" style="font-size: 45px; color: var(--primary-brown); margin-bottom: 12px;"></i>
@@ -209,7 +196,7 @@
         </div>
     </div>
 
-    <!-- الشريط العلوي المتجاوب للهواتف والأجهزة -->
+    <!-- الشريط العلوي -->
     <header>
         <div class="logo" onclick="showPage('shop')"><i class="fa-solid fa-gem"></i> مَــدَار | MADAR</div>
         <nav>
@@ -220,7 +207,6 @@
                 <li><a onclick="showPage('community')"><i class="fa-solid fa-users"></i> مداريون</a></li>
                 <li><a onclick="showPage('cart')" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i> السلة <span class="cart-badge" id="cartBadge">0</span></a></li>
                 
-                <!-- زر لوحة الموظفين (يفتح فقط إذا تم تسجيل الدخول بـ بيبو و aliteba11mdr) -->
                 <li id="navStaffBtn" style="display: none;">
                     <a onclick="showPage('admin-dashboard')" class="staff-nav-btn"><i class="fa-solid fa-sliders"></i> لوحة الموظفين ⚙️</a>
                 </li>
@@ -340,7 +326,7 @@
             </form>
         </section>
 
-        <!-- 7. لوحة تحكم الأدمن المتقدمة (تظهر فقط عند دخول بيبو و aliteba11mdr) -->
+        <!-- 7. لوحة تحكم الأدمن -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -473,9 +459,6 @@
         </section>
     </div>
 
-    <!-- صندوق الوصل للطباعة -->
-    <div id="printableInvoice"></div>
-
     <div id="successModal" class="modal-overlay">
         <div class="modal-box">
             <i class="fa-solid fa-circle-check" style="font-size: 50px; color: var(--success); margin-bottom: 10px;"></i>
@@ -520,7 +503,6 @@
         let uploadedCatBase64Image = "";
         let uploadedPostBase64Image = "";
 
-        // إدارة الدخول الإجباري للموقع
         window.checkMandatoryLoginState = function() {
             const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
             const modal = document.getElementById('mandatoryLoginModal');
@@ -533,7 +515,6 @@
                 navUserInfo.style.display = 'block';
                 userDisplayName.innerText = savedUser.name;
 
-                // التثبت إذا كان الدخول من كادر الإدارة (بيبو)
                 if ((savedUser.name.trim() === "بيبو" || savedUser.name.trim().includes("بيبو")) && savedUser.username.trim() === "aliteba11mdr") {
                     navStaffBtn.style.display = 'block';
                 } else {
@@ -566,7 +547,6 @@
 
             localStorage.setItem('madar_user_session', JSON.stringify(userSession));
 
-            // ملء بيانات الزبون تلقائياً في الطلب لتسهيل الشراء
             const custNameField = document.getElementById('custName');
             const custInstaField = document.getElementById('custInsta');
             if(custNameField) custNameField.value = name;
@@ -1130,10 +1110,11 @@
             });
         }
 
+        /* 💡 دالة طباعة الوصل المتوافقة 100% مع iOS Safari عبر Frame خاص */
         window.printInvoice = function(orderId) {
             const ord = orders.find(o => o.id === orderId);
             if(!ord) return;
-            const printBox = document.getElementById('printableInvoice');
+
             const itemsHTML = ord.items ? ord.items.map(i => `<tr><td style="padding:6px; border:1px solid #000;">${i.name}</td><td style="padding:6px; border:1px solid #000; text-align:center;">${i.qty}</td><td style="padding:6px; border:1px solid #000; text-align:left;">${Number(i.price).toLocaleString()} د.ع</td></tr>`).join('') : '';
 
             let qrHTML = '';
@@ -1142,32 +1123,69 @@
                 qrHTML = `<div style="text-align:center; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;"><p style="font-size:11px; margin-bottom:4px;">امسح الرمز لسماع البصمة / الرسالة 🎁</p><img src="${qrUrl}" style="width:100px; height:100px;"></div>`;
             }
 
-            printBox.innerHTML = `
-                <div style="max-width:400px; margin:0 auto; border:2px solid #4A3525; padding:20px; border-radius:10px; background:#fff; color:#000;">
-                    <div style="text-align:center; border-bottom:2px solid #4A3525; padding-bottom:10px; margin-bottom:15px;">
-                        <h2 style="color:#4A3525; margin-bottom:4px;">مَــدَار | MADAR</h2>
-                        <p style="font-size:12px;">وصل طلبية وتوصيل رسمي</p>
+            const invoiceHTML = `
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>وصل طلبية - مدار</title>
+                    <style>
+                        body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 15px; background: #fff; color: #000; direction: rtl; text-align: right; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+                        th, td { border: 1px solid #000; padding: 6px; }
+                        th { background: #f0ebe6; }
+                    </style>
+                </head>
+                <body>
+                    <div style="max-width:380px; margin:0 auto; border:2px solid #4A3525; padding:18px; border-radius:10px;">
+                        <div style="text-align:center; border-bottom:2px solid #4A3525; padding-bottom:8px; margin-bottom:12px;">
+                            <h2 style="color:#4A3525; margin:0 0 4px 0;">مَــدَار | MADAR</h2>
+                            <p style="font-size:12px; margin:0;">وصل طلبية وتوصيل رسمي</p>
+                        </div>
+                        <div style="font-size:13px; line-height:1.6; margin-bottom:12px;">
+                            <b>اسم الزبون:</b> ${ord.custName} (${ord.custInsta})<br>
+                            <b>رقم الهاتف:</b> ${ord.custPhone1}<br>
+                            <b>العنوان:</b> ${ord.custGov} - ${ord.custAddress}<br>
+                            <b>ملاحظات:</b> ${ord.custNotes || 'لا يوجد'}
+                        </div>
+                        <table>
+                            <thead><tr><th>القطعة</th><th>العدد</th><th>السعر</th></tr></thead>
+                            <tbody>${itemsHTML}</tbody>
+                        </table>
+                        <div style="font-size:14px; font-weight:bold; text-align:left; color:#4A3525;">
+                            المجموع الكلي مع التوصيل: ${Number(ord.grandTotal).toLocaleString()} د.ع
+                        </div>
+                        ${qrHTML}
                     </div>
-                    <div style="font-size:13px; line-height:1.6; margin-bottom:15px; text-align:right;">
-                        <b>اسم الزبون:</b> ${ord.custName} (${ord.custInsta})<br>
-                        <b>رقم الهاتف:</b> ${ord.custPhone1}<br>
-                        <b>العنوان:</b> ${ord.custGov} - ${ord.custAddress}<br>
-                        <b>ملاحظات:</b> ${ord.custNotes || 'لا يوجد'}
-                    </div>
-                    <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:15px;" border="1">
-                        <thead><tr style="background:#f0ebe6;"><th>القطعة</th><th>العدد</th><th>السعر</th></tr></thead>
-                        <tbody>${itemsHTML}</tbody>
-                    </table>
-                    <div style="font-size:14px; font-weight:bold; text-align:left; color:#4A3525;">
-                        المجموع الكلي مع التوصيل: ${Number(ord.grandTotal).toLocaleString()} د.ع
-                    </div>
-                    ${qrHTML}
-                </div>
+                </body>
+                </html>
             `;
-            
+
+            // إزالة أي إطار طباعة سابق إن وجد
+            let oldIframe = document.getElementById('safariPrintFrame');
+            if(oldIframe) oldIframe.remove();
+
+            // إنشاء إطار مخفي للطباعة المباشرة على آيفون وسفاري
+            const iframe = document.createElement('iframe');
+            iframe.id = 'safariPrintFrame';
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            document.body.appendChild(iframe);
+
+            const frameDoc = iframe.contentWindow.document;
+            frameDoc.open();
+            frameDoc.write(invoiceHTML);
+            frameDoc.close();
+
+            // استدعاء الطباعة بعد تحميل الصور في سفاري
+            iframe.contentWindow.focus();
             setTimeout(() => {
-                window.print();
-            }, 250);
+                iframe.contentWindow.print();
+            }, 300);
         };
 
         function updateAnalytics() {
