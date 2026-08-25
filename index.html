@@ -166,7 +166,6 @@
         .modal-overlay.active { display: flex; }
         .modal-box { background: #fff; padding: 25px; border-radius: 15px; text-align: center; max-width: 450px; width: 90%; }
 
-        /* تصميم كارت الملف الشخصي والمكافآت */
         .profile-card {
             background: #fff; border-radius: 15px; padding: 20px; border: 1px solid var(--light-brown);
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); max-width: 600px; margin: 0 auto 20px auto; text-align: center;
@@ -251,7 +250,7 @@
             <div id="myOrdersListContainer" style="max-width: 650px; margin: 0 auto;">جاري تحميل طلباتك...</div>
         </section>
 
-        <!-- 4. جديد: صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
+        <!-- 4. صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
         <section id="profile-page" class="page-section">
             <div class="profile-card">
                 <img id="profileAvatarView" src="https://via.placeholder.com/100" class="profile-avatar-img">
@@ -259,7 +258,7 @@
                 <p id="profileUserView" style="color: #777; font-size: 13px; margin-bottom: 10px;">@username</p>
                 
                 <div style="background: #fff8e1; border: 1px solid var(--gold); padding: 12px; border-radius: 10px; margin-bottom: 15px;">
-                    <span style="font-size: 14px; font-weight: bold;">رصيد نقاطك الكلي 🌟:</span>
+                    <span style="font-size: 14px; font-weight: bold;">رصيد نقاطك الكلي (مكتسبة تلقائياً) 🌟:</span>
                     <span id="profilePointsView" style="font-size: 20px; font-weight: bold; color: var(--primary-brown); margin-right: 5px;">0</span> نقطة
                 </div>
 
@@ -380,7 +379,7 @@
                 <div class="stat-card"><div>الطلبات المكتملة 🟢</div><div class="stat-num" id="statCompletedOrders">0</div></div>
             </div>
 
-            <!-- جديد: تحديد عتبات المكافآت والجوائز (أدمن مدار) -->
+            <!-- تحديد عتبات المكافآت والجوائز (أدمن مدار) -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-award" style="color:var(--gold);"></i> نظام تحديد المكافآت وعتبات النقاط (مداريون VIP)</h3>
                 <form onsubmit="handleAddRewardRule(event)" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
@@ -425,16 +424,6 @@
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 10px;"><i class="fa-solid fa-bell"></i> زبائن ينتظرون توفر القطع</h3>
                 <div id="stockNotificationsList">لا توجد طلبات انتظار حالياً.</div>
-            </div>
-
-            <!-- تعديل النقاط يدوياً للزبون -->
-            <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
-                <h3><i class="fa-solid fa-star" style="color:var(--gold);"></i> تعديل نقاط زبون يدويًا</h3>
-                <form onsubmit="handleAddLoyaltyPoints(event)" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                    <input type="text" id="loyaltyPhoneInput" placeholder="يوزر أو رقم الزبون" required style="width: 180px;">
-                    <input type="number" id="loyaltyPointsInput" placeholder="النقاط المضافة" required style="width: 130px;">
-                    <button type="submit" class="btn" style="width: 150px;">حفظ النقاط</button>
-                </form>
             </div>
 
             <!-- إدارة الأقسام -->
@@ -753,7 +742,6 @@
             }
         };
 
-        /* 👤 إعدادات وعرض ملف الزبون الشخصي والمكافآت */
         function renderUserProfile() {
             const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
             if (!savedUser) return;
@@ -813,7 +801,6 @@
             renderUserProfile();
         };
 
-        /* 🏆 إدارة قواعد المكافآت من لوحة الأدمن */
         window.handleAddRewardRule = async function(e) {
             e.preventDefault();
             const minPts = parseInt(document.getElementById('rewardMinPointsInput').value);
@@ -1158,20 +1145,6 @@
             });
         }
 
-        window.handleAddLoyaltyPoints = async function(e) {
-            e.preventDefault();
-            const phone = document.getElementById('loyaltyPhoneInput').value.trim();
-            const pts = parseInt(document.getElementById('loyaltyPointsInput').value);
-            if(phone && pts) {
-                const current = loyaltyData[phone] || 0;
-                try { 
-                    await setDoc(doc(db, "loyalty_points", phone), { points: current + pts }, { merge: true }); 
-                    alert(`تمت تحديث نقاط الزبون! النقاط الحالية: ${current + pts}`); 
-                } catch(e){}
-                e.target.reset();
-            }
-        };
-
         window.addToCart = function(productId) {
             const prod = products.find(p => String(p.id) === String(productId));
             const cartItem = cart.find(item => String(item.id) === String(productId));
@@ -1231,7 +1204,7 @@
             e.target.reset(); uploadedBase64Image = ""; document.getElementById('imgPreviewBox').style.display = 'none';
         };
 
-        /* 📦 معالجة الطلب وإضافة النقاط وحساب الجوائز المستحقة */
+        /* 📦 المعالجة التلقائية الكاملة للنقاط وحسابها فور الطلب */
         window.handleCheckout = async function(e) {
             e.preventDefault();
             if(cart.length === 0) { alert("السلة فارغة!"); return; }
@@ -1251,7 +1224,7 @@
             const currentExistingPts = loyaltyData[userKey] || 0;
             const updatedTotalUserPts = currentExistingPts + pointsEarnedInOrder;
 
-            // تحديث نقاط الزبون بـ Firestore
+            // تحديث رصيد نقاط الزبون التلقائي بقاعدة البيانات
             try {
                 await setDoc(doc(db, "loyalty_points", userKey), { points: updatedTotalUserPts }, { merge: true });
             } catch(e){}
@@ -1338,7 +1311,6 @@
             });
         }
 
-        /* 💡 طباعة الوصل المحدث الشامل للنقاط والمكافآت */
         window.printInvoice = function(orderId) {
             const ord = orders.find(o => o.id === orderId);
             if(!ord) return;
@@ -1351,7 +1323,6 @@
                 qrHTML = `<div style="text-align:center; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;"><p style="font-size:11px; margin-bottom:4px;">امسح الرمز لسماع البصمة / الرسالة 🎁</p><img src="${qrUrl}" style="width:100px; height:100px;"></div>`;
             }
 
-            // فحص الجوائز المفتوحة المتاحة للزبون
             const totalPts = ord.userTotalPoints || 0;
             const unlockedRewards = rewardRules.filter(r => totalPts >= r.minPoints);
             let rewardsPrintHTML = '';
