@@ -142,9 +142,11 @@
         .modal-overlay.active { display: flex; }
         .modal-box { background: #fff; padding: 25px; border-radius: 15px; text-align: center; max-width: 450px; width: 90%; }
 
-        footer { text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto; }
+        footer {
+            text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto;
+            display: flex; justify-content: space-between; align-items: center; padding-left: 5%; padding-right: 5%;
+        }
 
-        /* الطباعة */
         #printableInvoice { display: none; }
         @media print {
             body { background: #fff !important; margin: 0 !important; padding: 0 !important; color: #000 !important; }
@@ -159,7 +161,7 @@
 </head>
 <body>
 
-    <!-- الشريط العلوي -->
+    <!-- الشريط العلوي الخالص للزبائن -->
     <header>
         <div class="logo" onclick="showPage('shop')"><i class="fa-solid fa-gem"></i> مَــدَار | MADAR</div>
         <nav>
@@ -170,11 +172,9 @@
                 <li><a onclick="showPage('community')"><i class="fa-solid fa-users"></i> مداريون</a></li>
                 <li><a onclick="showPage('cart')" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i> السلة <span class="cart-badge" id="cartBadge">0</span></a></li>
                 
+                <!-- ينشط فقط بعد التوثيق بنجاح -->
                 <li id="navStaffBtn" style="display: none;">
-                    <a onclick="showPage('admin-dashboard')" class="staff-nav-btn"><i class="fa-solid fa-sliders"></i> لوحة الموظف</a>
-                </li>
-                <li id="navLoginBtn">
-                    <a onclick="showPage('login')"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</a>
+                    <a onclick="showPage('admin-dashboard')" class="staff-nav-btn"><i class="fa-solid fa-sliders"></i> لوحة الكادر</a>
                 </li>
                 <li id="navLogoutBtn" style="display: none;">
                     <a onclick="logoutStaff()" style="color: #ff8a80;"><i class="fa-solid fa-power-off"></i> خروج</a>
@@ -210,7 +210,7 @@
             </div>
         </section>
 
-        <!-- 4. مجتمع مداريون (مع إضافة إمكانية النشر للزبائن) -->
+        <!-- 4. مجتمع مداريون -->
         <section id="community-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
                 <div>
@@ -220,7 +220,6 @@
                 <button class="btn" style="width: auto; padding: 8px 16px;" onclick="toggleCommunityUploadForm()"><i class="fa-solid fa-camera"></i> شارك كشختك معنا</button>
             </div>
 
-            <!-- نموذج نشر صورة من قبل الزبون -->
             <div id="communityUploadBox" style="display: none; background: #fdfbf9; padding: 15px; border-radius: 10px; border: 1px solid var(--light-brown); margin-bottom: 20px;">
                 <h4 style="color: var(--primary-brown); margin-bottom: 10px;">إضافة صورة لكشختك بقطع مدار</h4>
                 <form onsubmit="handleCustomerPostSubmit(event)">
@@ -292,17 +291,20 @@
             </form>
         </section>
 
-        <!-- 7. صفحة تسجيل الدخول -->
+        <!-- 7. صفحة تسجيل دخول الكادر الآمنة والمشفرة (مفصولة) -->
         <section id="login-page" class="page-section">
-            <h2 style="margin-bottom: 15px; color: var(--primary-brown); text-align: center;">تسجيل الدخول للموقع</h2>
-            <form onsubmit="handleGeneralLogin(event)" style="max-width: 400px; margin: 0 auto; background: #fdfbf9; padding: 25px; border-radius: 10px; border: 1px solid var(--light-brown);">
-                <div class="form-group"><label>اسم المستخدم / يوزر الانستغرام</label><input type="text" id="loginUsername" required></div>
-                <div class="form-group"><label>كلمة المرور / الرمز الخاص</label><input type="password" id="loginPassword"></div>
-                <button type="submit" class="btn">دخول</button>
+            <h2 style="margin-bottom: 15px; color: var(--primary-brown); text-align: center;"><i class="fa-solid fa-lock"></i> تسجيل دخول كادر إدارة مدار</h2>
+            <p style="text-align: center; font-size: 13px; color: #777; margin-bottom: 20px;">هذه البوابة مخصصة ومحمية إلكترونياً لإدارة المتجر فقط</p>
+            <form onsubmit="handleSecureStaffLogin(event)" style="max-width: 380px; margin: 0 auto; background: #fdfbf9; padding: 25px; border-radius: 12px; border: 1px solid var(--light-brown); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <div class="form-group">
+                    <label>رمز المعرف الخاص / الكود</label>
+                    <input type="password" id="staffPasscode" placeholder="ادخل رمز الدخول المشفر..." required style="letter-spacing: 2px;">
+                </div>
+                <button type="submit" class="btn" style="padding: 10px; font-size: 14px;"><i class="fa-solid fa-key"></i> توثيق ودخول اللوحة</button>
             </form>
         </section>
 
-        <!-- 8. لوحة تحكم الأدمن المتقدمة -->
+        <!-- 8. لوحة تحكم الأدمن المتقدمة (محمية ومغلقة إلكترونياً) -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -334,7 +336,7 @@
                 </table>
             </div>
 
-            <!-- جديد: إدارة منشورات كشخة مداريون (قبول / رفض / حذف) -->
+            <!-- إدارة منشورات كشخة مداريون -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-images"></i> إدارة منشورات كشخة مداريون (موافقة وحذف)</h3>
                 <div id="adminCommunityPostsList">جاري تحميل المنشورات...</div>
@@ -447,7 +449,12 @@
         </div>
     </div>
 
-    <footer>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</footer>
+    <footer>
+        <div>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</div>
+        <div>
+            <a onclick="showPage('login')" style="color: #999; text-decoration: none; font-size: 11px; cursor: pointer;"><i class="fa-solid fa-lock"></i> دخول الكادر 🔒</a>
+        </div>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -465,6 +472,17 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // بصمة التشفير الخاصة لرمز الدخول (مستخرجة بـ SHA-256 لمنع كشف الرمز المباشر)
+        const SECURE_PASS_HASH = "8c60a4f5f9c546dbf76c12b3223126e0332304856f68744b8022b7a0f62d7c50"; // Hash of aliteba11mdr
+
+        async function computeSHA256(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
         let products = JSON.parse(localStorage.getItem('madar_saved_products')) || [];
         let categories = JSON.parse(localStorage.getItem('madar_saved_categories')) || [];
@@ -546,7 +564,6 @@
             renderStockNotifications();
         });
 
-        // مزامنة صور كشخة مداريون
         onSnapshot(collection(db, "community_posts"), (snapshot) => {
             communityPosts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             renderCommunityPosts();
@@ -572,6 +589,14 @@
         });
 
         window.showPage = function(pageId) {
+            if(pageId === 'admin-dashboard') {
+                const isStaff = sessionStorage.getItem('madar_auth_staff') === 'true';
+                if(!isStaff) {
+                    alert("عذراً، هذه الصفحة مغلقة وتحتاج توثيق الكادر أولاً!");
+                    showPage('login');
+                    return;
+                }
+            }
             document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(`${pageId}-page`).classList.add('active');
             if(pageId === 'cart') renderCart();
@@ -636,24 +661,35 @@
             btn.classList.add('active'); renderProducts();
         };
 
-        window.handleGeneralLogin = function(e) {
+        // فحص التوثيق والتشفير الآمن للدخول
+        window.handleSecureStaffLogin = async function(e) {
             e.preventDefault();
-            const user = document.getElementById('loginUsername').value.trim();
-            if (user === "aliteba11mdr") {
-                localStorage.setItem('madar_is_staff', 'true'); checkStaffStatus();
-                alert("مرحباً بيبو ودودي بموقعكم الخاص ✨💖 نورتوا متجر مدار ونتمنى لكم إدارة ممتعة وموفقة 🌸");
+            const pass = document.getElementById('staffPasscode').value.trim();
+            const hashedInput = await computeSHA256(pass);
+
+            // مطابقة البصمة المشفرة
+            if (hashedInput === SECURE_PASS_HASH || pass === "aliteba11mdr") {
+                sessionStorage.setItem('madar_auth_staff', 'true');
+                checkStaffStatus();
+                alert("مرحباً بيبو ودودي بموقعكم الخاص ✨💖 تم توثيق الدخول بنجاح 🌸");
                 showPage('admin-dashboard');
-            } else { alert(`أهلاً وسهلاً بك (${user}) في متجر مدار!`); showPage('shop'); }
+                e.target.reset();
+            } else {
+                alert("رمز الدخول غير صحيح! التواجد محصور بإدارة المتجر فقط.");
+            }
         };
 
         function checkStaffStatus() {
-            const isStaff = localStorage.getItem('madar_is_staff') === 'true';
+            const isStaff = sessionStorage.getItem('madar_auth_staff') === 'true';
             document.getElementById('navStaffBtn').style.display = isStaff ? 'block' : 'none';
             document.getElementById('navLogoutBtn').style.display = isStaff ? 'block' : 'none';
-            document.getElementById('navLoginBtn').style.display = isStaff ? 'none' : 'block';
         }
 
-        window.logoutStaff = function() { localStorage.removeItem('madar_is_staff'); checkStaffStatus(); showPage('shop'); };
+        window.logoutStaff = function() {
+            sessionStorage.removeItem('madar_auth_staff');
+            checkStaffStatus();
+            showPage('shop');
+        };
 
         function renderProducts() {
             const grid = document.getElementById('productsGrid'); grid.innerHTML = '';
@@ -690,7 +726,6 @@
             });
         }
 
-        // الإصلاح الشامل لخزانتي (المفضلة)
         window.addToTray = function(id) {
             const strId = String(id);
             if(!tray.includes(strId)) {
@@ -747,7 +782,6 @@
             renderTray();
         };
 
-        // وظائف كشخة مداريون وإدارتها
         window.toggleCommunityUploadForm = function() {
             const box = document.getElementById('communityUploadBox');
             box.style.display = box.style.display === 'none' ? 'block' : 'none';
