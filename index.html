@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- وسوم تحسين محركات البحث SEO -->
     <title>متجر مدار للإكسسوارات | Madar Store</title>
+    <meta name="description" content="متجر مدار للإكسسوارات والقطع المميزة - تسوق أحدث التنسيقات والحلي الحصرية في العراق وتتبع طلبك إلكترونياً.">
+    <meta name="keywords" content="مدار, متجر مدار, إكسسوارات مدار, alm3dar, Madar Store, إكسسوارات العراق, متجر إكسسوارات, مجوهرات">
+    <meta name="author" content="متجر مدار">
+    <meta name="robots" content="index, follow">
+
+    <!-- وسوم المعاينة في شبكات التواصل الاجتماعي (Open Graph / Facebook / WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="متجر مدار للإكسسوارات | Madar Store">
+    <meta property="og:description" content="تسوق أحدث قطع الإكسسوارات والتنسيقات المميزة مع خدمة التوصيل وتجميع النقاط التلقائي عبر الإنستغرام @alm3dar">
+    <meta property="og:site_name" content="متجر مدار">
+
     <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -213,6 +226,7 @@
         <nav>
             <ul>
                 <li><a onclick="showPage('shop')"><i class="fa-solid fa-store"></i> المعرض</a></li>
+                <li><a onclick="showPage('about')"><i class="fa-solid fa-circle-info"></i> من نحن</a></li>
                 <li><a onclick="showPage('tray')"><i class="fa-solid fa-box-archive"></i> خزانتـي (<span id="trayBadge">0</span>)</a></li>
                 <li><a onclick="showPage('tracker')"><i class="fa-solid fa-truck-fast"></i> التتبع</a></li>
                 <li><a onclick="showPage('community')"><i class="fa-solid fa-users"></i> مداريون</a></li>
@@ -238,7 +252,25 @@
             <div class="products-grid" id="productsGrid">جاري تحميل المعروضات...</div>
         </section>
 
-        <!-- 2. صفحة عرض تفاصيل القطعة -->
+        <!-- 2. صفحة من نحن ورابط حساب الإنستغرام -->
+        <section id="about-page" class="page-section">
+            <div style="max-width: 650px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 15px; border: 1px solid var(--light-brown); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <i class="fa-solid fa-gem" style="font-size: 50px; color: var(--primary-brown); margin-bottom: 15px;"></i>
+                <h2 style="color: var(--primary-brown); margin-bottom: 10px;">عن متجر مَــدَار | MADAR</h2>
+                <p style="font-size: 14px; color: #555; line-height: 1.8; margin-bottom: 20px;">
+                    أهلاً بك في عالم مدار ✨ نُقدم لكِ أجمل قطع الإكسسوارات والتنسيقات العصرية المصممة بعناية لتضيف لمسة فريدة لأناقتكِ اليومية. يسعدنا تواجدكِ معنا ونعدكِ بتجربة تسوق ممتازة وخدمة استثنائية.
+                </p>
+                <div style="background: #fdfbf9; border: 1px solid var(--light-brown); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="color: var(--primary-brown); margin-bottom: 8px;"><i class="fa-brands fa-instagram" style="color: #e1306c;"></i> تابعونا على إنستغرام</h4>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">لمشاهدة أحدث القطع والتنسيقات والعروض اليومية:</p>
+                    <a href="https://instagram.com/alm3dar" target="_blank" class="btn" style="display: inline-flex; width: auto; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 10px 20px; font-size: 14px; color: #fff; text-decoration: none; border-radius: 25px;">
+                        <i class="fa-brands fa-instagram"></i> @alm3dar
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. صفحة عرض تفاصيل القطعة -->
         <section id="product-detail-page" class="page-section">
             <button class="btn" style="width: auto; margin-bottom: 15px; background: #666;" onclick="showPage('shop')">
                 <i class="fa-solid fa-arrow-right"></i> رجوع للمعرض
@@ -275,20 +307,20 @@
             </div>
         </section>
 
-        <!-- 3. صفحة خزانة مجوهراتي -->
+        <!-- 4. صفحة خزانة مجوهراتي -->
         <section id="tray-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);"><i class="fa-solid fa-box-archive"></i> خزانة مجوهراتي (القطع المفضلة للتنسيق)</h2>
             <div class="products-grid" id="trayGrid">الخزانة فارغة حالياً. اضغط على أيقونة القلب على أي قطعة لإضافتها هنا!</div>
         </section>
 
-        <!-- 4. صفحة تتبع الطلبات التلقائية -->
+        <!-- 5. صفحة تتبع الطلبات التلقائية -->
         <section id="tracker-page" class="page-section">
             <h2 style="margin-bottom: 6px; color: var(--primary-brown);"><i class="fa-solid fa-truck-fast"></i> طلباتي وتتبع التوصيل</h2>
             <p style="font-size: 13px; color: #666; margin-bottom: 20px;">تظهر هنا جميع طلباتك المسجلة تلقائياً ومراحل تجهيزها وتوصيلها ✨</p>
             <div id="myOrdersListContainer" style="max-width: 650px; margin: 0 auto;">جاري تحميل طلباتك...</div>
         </section>
 
-        <!-- 5. صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
+        <!-- 6. صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
         <section id="profile-page" class="page-section">
             <div class="profile-card">
                 <img id="profileAvatarView" src="https://via.placeholder.com/100" class="profile-avatar-img">
@@ -321,7 +353,7 @@
             </div>
         </section>
 
-        <!-- 6. مجتمع مداريون -->
+        <!-- 7. مجتمع مداريون -->
         <section id="community-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
                 <div>
@@ -357,7 +389,7 @@
             </div>
         </section>
 
-        <!-- 7. صفحة السلة -->
+        <!-- 8. صفحة السلة -->
         <section id="cart-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">سلة التسوق</h2>
             <table class="cart-table">
@@ -381,7 +413,7 @@
             </div>
         </section>
 
-        <!-- 8. صفحة معلومات الزبون -->
+        <!-- 9. صفحة معلومات الزبون -->
         <section id="checkout-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">معلومات التوصيل والزبون</h2>
             <form id="checkoutForm" onsubmit="handleCheckout(event)">
@@ -402,7 +434,7 @@
             </form>
         </section>
 
-        <!-- 9. لوحة تحكم الأدمن -->
+        <!-- 10. لوحة تحكم الأدمن -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -611,6 +643,11 @@
 
     <footer>
         <div>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</div>
+        <div>
+            <a href="https://instagram.com/alm3dar" target="_blank" style="color: var(--primary-brown); text-decoration: none; font-weight: bold; font-size: 13px;">
+                <i class="fa-brands fa-instagram" style="color: #e1306c;"></i> alm3dar@
+            </a>
+        </div>
     </footer>
 
     <script type="module">
@@ -1342,7 +1379,6 @@
             e.target.reset(); uploadedBase64Image = ""; document.getElementById('imgPreviewBox').style.display = 'none';
         };
 
-        /* 📝 فتح نافذة تعديل قطعة بالبيانات الحالية */
         window.openEditProductModal = function(productId) {
             const prod = products.find(p => String(p.id) === String(productId));
             if (!prod) return;
@@ -1378,7 +1414,6 @@
             document.getElementById('editProductModal').classList.remove('active');
         };
 
-        /* 💾 حفظ تعديلات القطعة بقاعدة البيانات */
         window.handleSaveProductEdit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('editPId').value;
