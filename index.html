@@ -390,7 +390,7 @@
                 <div id="adminRewardsConfigList">جاري تحميل المكافآت...</div>
             </div>
 
-            <!-- جدول ترتيب القطع الأكثر مبيعاً -->
+            <!-- جدول ترتيب القطع الأكثر مبيعاً المحدث مع عمود الحذف -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-fire" style="color: #f57f17;"></i> ترتيب القطع الأكثر مبيعاً (خاص بالموظفين)</h3>
                 <table class="cart-table">
@@ -400,10 +400,11 @@
                             <th>اسم القطعة</th>
                             <th>عدد القطع المباعة</th>
                             <th>إجمالي الإيرادات</th>
+                            <th>حذف القطعة</th>
                         </tr>
                     </thead>
                     <tbody id="topSellingTableBody">
-                        <tr><td colspan="4" style="text-align:center; color:#777;">جاري حساب الإحصائيات...</td></tr>
+                        <tr><td colspan="5" style="text-align:center; color:#777;">جاري حساب الإحصائيات...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1204,7 +1205,6 @@
             e.target.reset(); uploadedBase64Image = ""; document.getElementById('imgPreviewBox').style.display = 'none';
         };
 
-        /* 📦 المعالجة التلقائية الكاملة للنقاط وحسابها فور الطلب */
         window.handleCheckout = async function(e) {
             e.preventDefault();
             if(cart.length === 0) { alert("السلة فارغة!"); return; }
@@ -1224,7 +1224,6 @@
             const currentExistingPts = loyaltyData[userKey] || 0;
             const updatedTotalUserPts = currentExistingPts + pointsEarnedInOrder;
 
-            // تحديث رصيد نقاط الزبون التلقائي بقاعدة البيانات
             try {
                 await setDoc(doc(db, "loyalty_points", userKey), { points: updatedTotalUserPts }, { merge: true });
             } catch(e){}
@@ -1430,13 +1429,14 @@
             renderTopSellingTable(sortedProducts);
         }
 
+        /* 💡 عرض جدول الأكثر مبيعاً مع إمكانية حذف القطعة مباشرة */
         function renderTopSellingTable(sortedArray) {
             const tbody = document.getElementById('topSellingTableBody');
             if(!tbody) return;
             tbody.innerHTML = '';
 
             if(sortedArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#777;">لا توجد مبيعات مسجلة حتى الآن.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#777;">لا توجد مبيعات مسجلة حتى الآن.</td></tr>';
                 return;
             }
 
@@ -1447,10 +1447,32 @@
                         <td>${item.name}</td>
                         <td><b style="color:var(--primary-brown);">${item.qty} قطعة</b></td>
                         <td>${Number(item.revenue).toLocaleString()} د.ع</td>
+                        <td>
+                            <button onclick="deleteProductByName('${item.name}')" style="color:red; background:none; border:none; cursor:pointer; font-size:12px; font-weight:bold;">
+                                <i class="fa-solid fa-trash"></i> حذف القطعة
+                            </button>
+                        </td>
                     </tr>
                 `;
             });
         }
+
+        /* 🗑️ دالة حذف القطعة بالاسم من قاعدة البيانات والمخزون */
+        window.deleteProductByName = async function(pName) {
+            if(confirm(`هل أنت متأكد من حذف قطعة (${pName}) نهائياً من المتجر والمخزون؟`)) {
+                const prod = products.find(p => p.name === pName);
+                if(prod) {
+                    try {
+                        await deleteDoc(doc(db, "products", prod.id));
+                        alert(`تم حذف قطعة (${pName}) بنجاح ✨`);
+                    } catch(e) {
+                        alert("حدث خطأ أثناء الحذف!");
+                    }
+                } else {
+                    alert("هذه القطعة غير موجودة بالمخزون الحالي (ربما تم حذفها سابقاً).");
+                }
+            }
+        };
 
         window.updateOrderStatus = async function(orderId, newStatus) { try { await updateDoc(doc(db, "orders", orderId), { status: newStatus }); } catch(e){} };
         window.deleteOrder = async function(orderId) { if(confirm("حذف هذا الطلب؟")) { try { await deleteDoc(doc(db, "orders", orderId)); } catch(e){} } };
