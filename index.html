@@ -101,11 +101,12 @@
             padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; z-index: 2;
         }
 
-        .product-img { width: 100%; height: 190px; object-fit: cover; background: #f5f5f5; }
+        .product-img { width: 100%; height: 190px; object-fit: cover; background: #f5f5f5; cursor: pointer; }
         .product-info { padding: 10px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 6px; }
         .tags-box { display: flex; flex-wrap: wrap; gap: 4px; }
         .product-cat-tag { font-size: 10px; background: #f5efe8; color: var(--secondary-brown); padding: 2px 6px; border-radius: 8px; font-weight: bold; }
-        .product-title { font-size: 14px; font-weight: 700; color: #222; margin: 2px 0; }
+        .product-title { font-size: 14px; font-weight: 700; color: #222; margin: 2px 0; cursor: pointer; }
+        .product-title:hover { color: var(--secondary-brown); }
         .product-price { color: var(--secondary-brown); font-weight: 700; font-size: 14px; }
         .points-badge-tag { font-size: 11px; color: #d81b60; font-weight: bold; background: #fce4ec; padding: 2px 6px; border-radius: 6px; width: fit-content; }
         
@@ -123,6 +124,31 @@
             display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px;
         }
         .btn:hover { background-color: var(--secondary-brown); }
+
+        /* ستايل صفحة تفاصيل القطعة (على نمط أمازون) */
+        .detail-wrapper {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 15px; align-items: start;
+        }
+        @media (max-width: 768px) {
+            .detail-wrapper { grid-template-columns: 1fr; gap: 20px; }
+        }
+        .detail-img-box {
+            width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #eee;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: #fff; position: relative;
+        }
+        .detail-img-box img { width: 100%; max-height: 450px; object-fit: cover; display: block; }
+        .detail-info-box { display: flex; flex-direction: column; gap: 15px; }
+        .detail-price-tag { font-size: 26px; font-weight: bold; color: var(--primary-brown); }
+        .detail-desc-box {
+            background: #fdfbf9; border: 1px solid var(--light-brown); padding: 15px; border-radius: 10px;
+            font-size: 14px; line-height: 1.7; color: #444; white-space: pre-line;
+        }
+        .back-btn-header {
+            display: inline-flex; align-items: center; gap: 8px; background: #f0ebe6; color: var(--primary-brown);
+            border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;
+            transition: 0.2s; margin-bottom: 10px;
+        }
+        .back-btn-header:hover { background: var(--primary-brown); color: #fff; }
 
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; }
@@ -235,6 +261,39 @@
             <h2 style="margin-bottom: 12px; color: var(--primary-brown);">أحدث الإكسسوارات</h2>
             <div class="categories-scroll" id="categoriesBar"></div>
             <div class="products-grid" id="productsGrid">جاري تحميل المعروضات...</div>
+        </section>
+
+        <!-- 🔍 صفحة تفاصيل القطعة الجديدة (على نمط أمازون والمتاجر) -->
+        <section id="product-detail-page" class="page-section">
+            <button class="back-btn-header" onclick="showPage('shop')"><i class="fa-solid fa-arrow-right"></i> رجوع للمتجر</button>
+            <div class="detail-wrapper">
+                <div class="detail-img-box">
+                    <span id="detailBadgeTag" class="badge-overlay" style="display:none; font-size:12px; padding:5px 12px;"></span>
+                    <img id="detailImgView" src="" alt="صورة القطعة">
+                </div>
+                <div class="detail-info-box">
+                    <div id="detailCatTags" class="tags-box"></div>
+                    <h1 id="detailTitleView" style="color: var(--primary-brown); font-size: 24px;">اسم القطعة</h1>
+                    <div class="detail-price-tag" id="detailPriceView">0 د.ع</div>
+                    <div class="points-badge-tag" id="detailPointsView" style="font-size: 13px; padding: 4px 10px;">+0 نقطة VIP 🌟</div>
+                    
+                    <div style="font-size:13px; font-weight:bold; margin-top:5px;" id="detailStockView"></div>
+
+                    <div class="detail-desc-box">
+                        <h4 style="color: var(--primary-brown); margin-bottom: 6px;"><i class="fa-solid fa-circle-info"></i> وصف القطعة والتفاصيل:</h4>
+                        <div id="detailDescText">لا يوجد وصف متاح حالياً لهذا المنتج.</div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button id="detailAddToCartBtn" class="btn" style="padding: 12px; font-size: 15px; flex: 1;">
+                            <i class="fa-solid fa-bag-shopping"></i> إضافة إلى السلة
+                        </button>
+                        <button id="detailAddToTrayBtn" class="icon-btn" style="padding: 12px 18px; font-size: 18px;" title="إضافة للخزانة والمفضلة 💖">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- 2. صفحة خزانة مجوهراتي -->
@@ -390,7 +449,7 @@
                 <div id="adminRewardsConfigList">جاري تحميل المكافآت...</div>
             </div>
 
-            <!-- جدول ترتيب القطع الأكثر مبيعاً المحدث مع عمود الحذف -->
+            <!-- جدول ترتيب القطع الأكثر مبيعاً مع خيار الحذف -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-fire" style="color: #f57f17;"></i> ترتيب القطع الأكثر مبيعاً (خاص بالموظفين)</h3>
                 <table class="cart-table">
@@ -454,8 +513,8 @@
                 </div>
             </div>
 
-            <!-- إضافة قطعة جديدة بالنقاط -->
-            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة ونقاطها</h3>
+            <!-- 📝 إضافة قطعة جديدة بالنقاط + الوصف (نظام الموظفين) -->
+            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة ووصفها ونقاطها</h3>
             <form onsubmit="handleAddProduct(event)" style="margin-top: 12px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
                 <div class="form-row">
                     <div class="form-group"><label>اسم القطعة *</label><input type="text" id="pTitle" required></div>
@@ -468,6 +527,12 @@
                         <input type="number" id="pPoints" placeholder="مثلاً 10 نقاط" required min="0">
                     </div>
                     <div class="form-group"><label>العدد المتوفر بالمخزون *</label><input type="number" id="pStock" required min="1"></div>
+                </div>
+
+                <!-- حقل إضافة وصف القطعة التلقائي للموظف -->
+                <div class="form-group">
+                    <label>وصف التفاصيل والمعلومات للقطعة (يظهر بصفحة المنتج) 📝</label>
+                    <textarea id="pDesc" rows="3" placeholder="اكتب تفاصيل خامة القطعة، المقاس، اللون، التنسيقات المقترحة..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -743,6 +808,51 @@
             }
         };
 
+        /* 🔍 فتح صفحة تفاصيل المنتج بأسلوب المتجر الاحترافي */
+        window.openProductDetails = function(productId) {
+            const p = products.find(prod => String(prod.id) === String(productId));
+            if(!p) return;
+
+            document.getElementById('detailImgView').src = p.image || 'https://via.placeholder.com/350';
+            document.getElementById('detailTitleView').innerText = p.name;
+            document.getElementById('detailPriceView').innerText = Number(p.price).toLocaleString() + " د.ع";
+            document.getElementById('detailPointsView').innerText = `+${p.points || 0} نقطة VIP 🌟`;
+            
+            const descView = document.getElementById('detailDescText');
+            descView.innerText = (p.desc && p.desc.trim() !== "") ? p.desc : "إكسسوار مميز وعالي الجودة، مصمم بدقة وعناية ليناسب إطلالتك الراقية من متجر مدار ✨";
+
+            const badgeTag = document.getElementById('detailBadgeTag');
+            if(p.badge && p.badge.trim() !== "") {
+                badgeTag.innerText = p.badge;
+                badgeTag.style.display = 'block';
+            } else {
+                badgeTag.style.display = 'none';
+            }
+
+            const catsBox = document.getElementById('detailCatTags');
+            if(Array.isArray(p.category)) {
+                catsBox.innerHTML = p.category.map(c => `<span class="product-cat-tag">${c}</span>`).join(' ');
+            } else {
+                catsBox.innerHTML = `<span class="product-cat-tag">${p.category || 'عام'}</span>`;
+            }
+
+            const stockView = document.getElementById('detailStockView');
+            const isOut = p.stock <= 0;
+            stockView.innerHTML = isOut ? `<span class="out-stock">حالة المخزون: نفذت الكمية ⚠️</span>` : `<span class="in-stock">حالة المخزون: متوفر حالياً (${p.stock} قطعة) 🟢</span>`;
+
+            const addCartBtn = document.getElementById('detailAddToCartBtn');
+            addCartBtn.onclick = function() {
+                if(isOut) requestStockNotification(p.name);
+                else addToCart(p.id);
+            };
+            addCartBtn.innerHTML = isOut ? 'أنبهني عند التوفر 🔔' : '<i class="fa-solid fa-bag-shopping"></i> إضافة إلى السلة';
+
+            const addTrayBtn = document.getElementById('detailAddToTrayBtn');
+            addTrayBtn.onclick = function() { addToTray(p.id); };
+
+            showPage('product-detail');
+        };
+
         function renderUserProfile() {
             const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
             if (!savedUser) return;
@@ -909,11 +1019,11 @@
                 grid.innerHTML += `
                     <div class="product-card">
                         ${badgeHTML}
-                        <img src="${p.image || 'https://via.placeholder.com/150'}" class="product-img">
+                        <img src="${p.image || 'https://via.placeholder.com/150'}" class="product-img" onclick="openProductDetails('${p.id}')">
                         <div class="product-info">
                             <div>
                                 <div class="tags-box">${tagsHTML}</div>
-                                <div class="product-title">${p.name}</div>
+                                <div class="product-title" onclick="openProductDetails('${p.id}')">${p.name}</div>
                                 <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
                                 <div class="points-badge-tag">+${p.points || 0} نقطة VIP 🌟</div>
                             </div>
@@ -964,10 +1074,10 @@
             items.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
-                        <img src="${p.image}" class="product-img">
+                        <img src="${p.image}" class="product-img" onclick="openProductDetails('${p.id}')">
                         <div class="product-info">
                             <div>
-                                <div class="product-title">${p.name}</div>
+                                <div class="product-title" onclick="openProductDetails('${p.id}')">${p.name}</div>
                                 <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
                             </div>
                             <div>
@@ -1188,6 +1298,7 @@
             cart = cart.filter(item => String(item.id) !== String(id)); saveCartToStorage(); updateCartBadge(); renderCart();
         };
 
+        /* 💾 حفظ وإضافة قطعة مع الوصف بنظام الموظف */
         window.handleAddProduct = async function(e) {
             e.preventDefault();
             if (!uploadedBase64Image) { alert("اختر صورة للقطعة من الاستوديو!"); return; }
@@ -1199,9 +1310,10 @@
                 points: parseInt(document.getElementById('pPoints').value) || 0,
                 stock: parseInt(document.getElementById('pStock').value),
                 badge: document.getElementById('pBadge').value,
+                desc: document.getElementById('pDesc').value.trim(),
                 image: uploadedBase64Image
             };
-            try { await addDoc(collection(db, "products"), newProd); alert("تم نشر القطعة بنجاح بالمتجر!"); } catch(e){}
+            try { await addDoc(collection(db, "products"), newProd); alert("تم نشر القطعة ووصفها بنجاح بالمتجر!"); } catch(e){}
             e.target.reset(); uploadedBase64Image = ""; document.getElementById('imgPreviewBox').style.display = 'none';
         };
 
@@ -1429,7 +1541,6 @@
             renderTopSellingTable(sortedProducts);
         }
 
-        /* 💡 عرض جدول الأكثر مبيعاً مع إمكانية حذف القطعة مباشرة */
         function renderTopSellingTable(sortedArray) {
             const tbody = document.getElementById('topSellingTableBody');
             if(!tbody) return;
@@ -1457,7 +1568,6 @@
             });
         }
 
-        /* 🗑️ دالة حذف القطعة بالاسم من قاعدة البيانات والمخزون */
         window.deleteProductByName = async function(pName) {
             if(confirm(`هل أنت متأكد من حذف قطعة (${pName}) نهائياً من المتجر والمخزون؟`)) {
                 const prod = products.find(p => p.name === pName);
@@ -1469,7 +1579,7 @@
                         alert("حدث خطأ أثناء الحذف!");
                     }
                 } else {
-                    alert("هذه القطعة غير موجودة بالمخزون الحالي (ربما تم حذفها سابقاً).");
+                    alert("هذه القطعة غير موجودة بالمخزون الحالي.");
                 }
             }
         };
