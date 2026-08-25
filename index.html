@@ -144,21 +144,14 @@
 
         footer { text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto; }
 
-        /* الإصلاح الشامل والكامل للطباعة */
+        /* الطباعة */
         #printableInvoice { display: none; }
-
         @media print {
             body { background: #fff !important; margin: 0 !important; padding: 0 !important; color: #000 !important; }
             header, nav, .container, footer, .modal-overlay { display: none !important; }
-            
             #printableInvoice {
-                display: block !important;
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 10px !important;
+                display: block !important; position: absolute !important; left: 0 !important; top: 0 !important;
+                width: 100% !important; margin: 0 !important; padding: 10px !important;
             }
             #printableInvoice * { visibility: visible !important; }
         }
@@ -173,7 +166,6 @@
             <ul>
                 <li><a onclick="showPage('shop')"><i class="fa-solid fa-store"></i> المعرض</a></li>
                 <li><a onclick="showPage('tray')"><i class="fa-solid fa-box-archive"></i> خزانتـي (<span id="trayBadge">0</span>)</a></li>
-                <li><a onclick="showPage('compare')"><i class="fa-solid fa-code-compare"></i> مقارنة</a></li>
                 <li><a onclick="showPage('tracker')"><i class="fa-solid fa-truck-fast"></i> تتبع الطلب</a></li>
                 <li><a onclick="showPage('community')"><i class="fa-solid fa-users"></i> مداريون</a></li>
                 <li><a onclick="showPage('cart')" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i> السلة <span class="cart-badge" id="cartBadge">0</span></a></li>
@@ -205,16 +197,7 @@
             <div class="products-grid" id="trayGrid">الخزانة فارغة حالياً. اضغط على أيقونة القلب على أي قطعة لإضافتها هنا!</div>
         </section>
 
-        <!-- 3. صفحة مقارنة القطع -->
-        <section id="compare-page" class="page-section">
-            <h2 style="margin-bottom: 15px; color: var(--primary-brown);"><i class="fa-solid fa-code-compare"></i> مقارنة القطع المتجاورة</h2>
-            <div id="compareContainer" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                <p style="color: #777;">لم تختر قطعاً للمقارنة بعد. اضغط على أيقونة المقارنة ⚖️ في كارت القطعة!</p>
-            </div>
-            <button class="btn" style="margin-top: 20px; width: 200px;" onclick="clearCompare()">مسح المقارنة</button>
-        </section>
-
-        <!-- 4. صفحة تتبع الطلب -->
+        <!-- 3. صفحة تتبع الطلب -->
         <section id="tracker-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);"><i class="fa-solid fa-truck-fast"></i> تتبع حالة طلبك</h2>
             <div style="max-width: 450px; margin: 0 auto; background: #fdfbf9; padding: 20px; border-radius: 10px; border: 1px solid var(--light-brown);">
@@ -227,17 +210,44 @@
             </div>
         </section>
 
-        <!-- 5. مجتمع مداريون -->
+        <!-- 4. مجتمع مداريون (مع إضافة إمكانية النشر للزبائن) -->
         <section id="community-page" class="page-section">
-            <h2 style="margin-bottom: 10px; color: var(--primary-brown);"><i class="fa-solid fa-users"></i> كشخة مداريون ✨</h2>
-            <p style="color: #666; margin-bottom: 15px;">صور حقيقية وكشخة زبائننا العاليين بقطع متجر مدار 💖</p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
-                <div style="border-radius: 10px; overflow: hidden; border: 1px solid #ddd;"><img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300" style="width: 100%; height: 200px; object-fit: cover;"><p style="padding: 8px; text-align: center; font-size: 12px; font-weight: bold;">تنسيق طقم الشمس 🌟</p></div>
-                <div style="border-radius: 10px; overflow: hidden; border: 1px solid #ddd;"><img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300" style="width: 100%; height: 200px; object-fit: cover;"><p style="padding: 8px; text-align: center; font-size: 12px; font-weight: bold;">كشخة السوار الفضي 💫</p></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <div>
+                    <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-users"></i> كشخة مداريون ✨</h2>
+                    <p style="color: #666; font-size: 13px;">صور حقيقية وكشخة زبائننا العاليين بقطع متجر مدار 💖</p>
+                </div>
+                <button class="btn" style="width: auto; padding: 8px 16px;" onclick="toggleCommunityUploadForm()"><i class="fa-solid fa-camera"></i> شارك كشختك معنا</button>
+            </div>
+
+            <!-- نموذج نشر صورة من قبل الزبون -->
+            <div id="communityUploadBox" style="display: none; background: #fdfbf9; padding: 15px; border-radius: 10px; border: 1px solid var(--light-brown); margin-bottom: 20px;">
+                <h4 style="color: var(--primary-brown); margin-bottom: 10px;">إضافة صورة لكشختك بقطع مدار</h4>
+                <form onsubmit="handleCustomerPostSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>عنوان أو وصف الصورة *</label>
+                            <input type="text" id="postTitle" placeholder="مثال: تنسيق طقم الشمس 🌟" required>
+                        </div>
+                        <div class="form-group">
+                            <label>اسمك أو يوزر انستغرامك (اختياري)</label>
+                            <input type="text" id="postUser" placeholder="@username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>اختر الصورة من الاستوديو *</label>
+                        <input type="file" id="postImgFile" accept="image/*" required style="padding: 6px;">
+                    </div>
+                    <button type="submit" class="btn">إرسال الصورة للمراجعة والنشر</button>
+                </form>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;" id="approvedCommunityGrid">
+                جاري تحميل الصور المعروضة...
             </div>
         </section>
 
-        <!-- 6. صفحة السلة -->
+        <!-- 5. صفحة السلة -->
         <section id="cart-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">سلة التسوق</h2>
             <table class="cart-table">
@@ -261,7 +271,7 @@
             </div>
         </section>
 
-        <!-- 7. صفحة معلومات الزبون -->
+        <!-- 6. صفحة معلومات الزبون -->
         <section id="checkout-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">معلومات التوصيل والزبون</h2>
             <form id="checkoutForm" onsubmit="handleCheckout(event)">
@@ -282,7 +292,7 @@
             </form>
         </section>
 
-        <!-- 8. صفحة تسجيل الدخول -->
+        <!-- 7. صفحة تسجيل الدخول -->
         <section id="login-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown); text-align: center;">تسجيل الدخول للموقع</h2>
             <form onsubmit="handleGeneralLogin(event)" style="max-width: 400px; margin: 0 auto; background: #fdfbf9; padding: 25px; border-radius: 10px; border: 1px solid var(--light-brown);">
@@ -292,7 +302,7 @@
             </form>
         </section>
 
-        <!-- 9. لوحة تحكم الأدمن المتقدمة -->
+        <!-- 8. لوحة تحكم الأدمن المتقدمة -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -324,13 +334,19 @@
                 </table>
             </div>
 
+            <!-- جديد: إدارة منشورات كشخة مداريون (قبول / رفض / حذف) -->
+            <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
+                <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-images"></i> إدارة منشورات كشخة مداريون (موافقة وحذف)</h3>
+                <div id="adminCommunityPostsList">جاري تحميل المنشورات...</div>
+            </div>
+
             <!-- قسم الطلبات الواردة الإلكترونية -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-inbox"></i> الطلبات الواردة الإلكترونية</h3>
                 <div id="ordersListContainer">جاري تحميل الطلبات...</div>
             </div>
 
-            <!-- قسم طلبت إشعارات التوفر -->
+            <!-- قسم طلبات إشعارات التوفر -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 10px;"><i class="fa-solid fa-bell"></i> زبائن ينتظرون توفر القطع</h3>
                 <div id="stockNotificationsList">لا توجد طلبات انتظار حالياً.</div>
@@ -419,7 +435,7 @@
         </section>
     </div>
 
-    <!-- صندوق الوصل المخصص للطباعة -->
+    <!-- صندوق الوصل للطباعة -->
     <div id="printableInvoice"></div>
 
     <div id="successModal" class="modal-overlay">
@@ -454,14 +470,15 @@
         let categories = JSON.parse(localStorage.getItem('madar_saved_categories')) || [];
         let orders = [];
         let stockNotifications = [];
+        let communityPosts = [];
         let loyaltyData = {};
         let cart = JSON.parse(localStorage.getItem('madar_cart')) || [];
         let tray = JSON.parse(localStorage.getItem('madar_tray')) || [];
-        let compareList = [];
         let deliveryFee = parseFloat(localStorage.getItem('madar_delivery')) || 5000;
         let selectedCategory = "الكل";
         let uploadedBase64Image = "";
         let uploadedCatBase64Image = "";
+        let uploadedPostBase64Image = "";
 
         function compressImage(file, maxDim = 600) {
             return new Promise((resolve) => {
@@ -501,6 +518,11 @@
             if (file) uploadedCatBase64Image = await compressImage(file, 200);
         });
 
+        document.getElementById('postImgFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) uploadedPostBase64Image = await compressImage(file, 600);
+        });
+
         onSnapshot(collection(db, "products"), (snapshot) => {
             products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             localStorage.setItem('madar_saved_products', JSON.stringify(products));
@@ -522,6 +544,13 @@
         onSnapshot(collection(db, "stock_notifications"), (snapshot) => {
             stockNotifications = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             renderStockNotifications();
+        });
+
+        // مزامنة صور كشخة مداريون
+        onSnapshot(collection(db, "community_posts"), (snapshot) => {
+            communityPosts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderCommunityPosts();
+            renderAdminCommunityPosts();
         });
 
         onSnapshot(collection(db, "loyalty_points"), (snapshot) => {
@@ -547,10 +576,9 @@
             document.getElementById(`${pageId}-page`).classList.add('active');
             if(pageId === 'cart') renderCart();
             if(pageId === 'tray') renderTray();
-            if(pageId === 'compare') renderCompare();
             if(pageId === 'admin-dashboard') {
                 document.getElementById('deliveryInput').value = deliveryFee;
-                renderAdminOrders(); renderAdminInventory(); renderAdminCategories(); updateCategoryDropdown(); updateAnalytics();
+                renderAdminOrders(); renderAdminInventory(); renderAdminCategories(); updateCategoryDropdown(); updateAnalytics(); renderAdminCommunityPosts();
             }
         };
 
@@ -654,7 +682,6 @@
                                         ${isOut ? 'أنبهني عند التوفر 🔔' : 'إضافة للسلة 🛒'}
                                     </button>
                                     <button class="icon-btn" onclick="addToTray('${p.id}')" title="حفظ لخزانتي 💖"><i class="fa-solid fa-heart"></i></button>
-                                    <button class="icon-btn" onclick="addToCompare('${p.id}')" title="مقارنة ⚖️"><i class="fa-solid fa-code-compare"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -663,27 +690,49 @@
             });
         }
 
+        // الإصلاح الشامل لخزانتي (المفضلة)
         window.addToTray = function(id) {
-            if(!tray.includes(id)) tray.push(id);
-            localStorage.setItem('madar_tray', JSON.stringify(tray)); updateTrayBadge();
-            alert("تمت إضافة القطعة لخزانة مجوهراتي ✨");
+            const strId = String(id);
+            if(!tray.includes(strId)) {
+                tray.push(strId);
+                localStorage.setItem('madar_tray', JSON.stringify(tray));
+                updateTrayBadge();
+                renderTray();
+                alert("تمت إضافة القطعة لخزانة مجوهراتي ✨");
+            } else {
+                alert("القطعة موجودة بالفعل في خزانتك ✨");
+            }
         };
 
-        function updateTrayBadge() { document.getElementById('trayBadge').innerText = tray.length; }
+        function updateTrayBadge() { 
+            const badge = document.getElementById('trayBadge');
+            if(badge) badge.innerText = tray.length; 
+        }
 
         function renderTray() {
-            const grid = document.getElementById('trayGrid'); grid.innerHTML = '';
-            const items = products.filter(p => tray.includes(p.id));
-            if(items.length === 0) { grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:20px;">الخزانة فارغة حالياً.</p>'; return; }
+            const grid = document.getElementById('trayGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const items = products.filter(p => tray.includes(String(p.id)));
+
+            if(items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:30px; color:#888;">الخزانة فارغة حالياً. اضغط على أيقونة القلب على أي قطعة لإضافتها هنا!</p>';
+                return;
+            }
+
             items.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
                         <img src="${p.image}" class="product-img">
                         <div class="product-info">
-                            <div class="product-title">${p.name}</div>
-                            <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
-                            <button class="btn" onclick="addToCart('${p.id}')">إضافة للسلة 🛒</button>
-                            <button onclick="removeFromTray('${p.id}')" style="color:red; border:none; background:none; margin-top:5px; cursor:pointer;">إزالة من الخزانة</button>
+                            <div>
+                                <div class="product-title">${p.name}</div>
+                                <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
+                            </div>
+                            <div>
+                                <button class="btn" onclick="addToCart('${p.id}')">إضافة للسلة 🛒</button>
+                                <button onclick="removeFromTray('${p.id}')" style="color:red; border:none; background:none; margin-top:8px; cursor:pointer; font-size:12px; width:100%; text-align:center;"><i class="fa-solid fa-trash"></i> إزالة من الخزانة</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -691,34 +740,108 @@
         }
 
         window.removeFromTray = function(id) {
-            tray = tray.filter(x => x !== id); localStorage.setItem('madar_tray', JSON.stringify(tray)); updateTrayBadge(); renderTray();
+            const strId = String(id);
+            tray = tray.filter(x => String(x) !== strId);
+            localStorage.setItem('madar_tray', JSON.stringify(tray));
+            updateTrayBadge();
+            renderTray();
         };
 
-        window.addToCompare = function(id) {
-            if(compareList.length >= 2) compareList.shift();
-            if(!compareList.includes(id)) compareList.push(id);
-            alert("تمت إضافة القطعة لمختبر المقارنة! اضغط على (مقارنة) بالهيدر للمعاينة.");
+        // وظائف كشخة مداريون وإدارتها
+        window.toggleCommunityUploadForm = function() {
+            const box = document.getElementById('communityUploadBox');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
         };
 
-        function renderCompare() {
-            const container = document.getElementById('compareContainer'); container.innerHTML = '';
-            const items = products.filter(p => compareList.includes(p.id));
-            if(items.length === 0) { container.innerHTML = '<p style="color:#777;">اختر قطعتين لمقارنتهما جنباً إلى جنب.</p>'; return; }
-            items.forEach(p => {
-                container.innerHTML += `
-                    <div style="border: 1px solid #ddd; border-radius:10px; padding:15px; width:220px; background:#fff; text-align:center;">
-                        <img src="${p.image}" style="width:100%; height:160px; object-fit:cover; border-radius:8px;">
-                        <h4 style="margin:10px 0;">${p.name}</h4>
-                        <p style="color:var(--secondary-brown); font-weight:bold;">${Number(p.price).toLocaleString()} د.ع</p>
-                        <p style="font-size:12px; margin:5px 0;">الأقسام: ${Array.isArray(p.category)?p.category.join('، '):p.category}</p>
-                        <p style="font-size:12px; margin-bottom:10px;">المخزون: ${p.stock} قطعة</p>
-                        <button class="btn" onclick="addToCart('${p.id}')">إضافة للسلة 🛒</button>
+        window.handleCustomerPostSubmit = async function(e) {
+            e.preventDefault();
+            const title = document.getElementById('postTitle').value.trim();
+            const user = document.getElementById('postUser').value.trim();
+            if(!uploadedPostBase64Image) { alert("اختر صورة من الاستوديو!"); return; }
+
+            const newPost = {
+                title: title,
+                user: user || 'زبون مداري ✨',
+                image: uploadedPostBase64Image,
+                status: 'pending',
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "community_posts"), newPost);
+                alert("تم إرسال صورتك بنجاح! ستظهر بالمعرض فور موافقة الموظفين ✨💖");
+                e.target.reset();
+                uploadedPostBase64Image = "";
+                document.getElementById('communityUploadBox').style.display = 'none';
+            } catch(err) {
+                alert("حدث خطأ أثناء الرفع، حاول ثانية.");
+            }
+        };
+
+        function renderCommunityPosts() {
+            const grid = document.getElementById('approvedCommunityGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            const approved = communityPosts.filter(p => p.status === 'approved');
+            if(approved.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:30px; color:#888;">لا توجد صور معروضة حالياً. كن أول المشاركين واضغط شارك كشختك معنا!</p>';
+                return;
+            }
+
+            approved.forEach(p => {
+                grid.innerHTML += `
+                    <div style="border-radius: 10px; overflow: hidden; border: 1px solid #ddd; background:#fff;">
+                        <img src="${p.image}" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 10px; text-align: center;">
+                            <p style="font-size: 13px; font-weight: bold; margin-bottom: 2px;">${p.title}</p>
+                            <span style="font-size: 11px; color: var(--secondary-brown);">${p.user}</span>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        window.clearCompare = function() { compareList = []; renderCompare(); };
+        function renderAdminCommunityPosts() {
+            const container = document.getElementById('adminCommunityPostsList');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(communityPosts.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#777; padding:10px;">لا توجد طلبات نشر حالياً.</p>';
+                return;
+            }
+
+            communityPosts.forEach(p => {
+                const isApproved = p.status === 'approved';
+                container.innerHTML += `
+                    <div style="display:flex; align-items:center; gap:15px; padding:10px; border-bottom:1px solid #eee; background:#fff; margin-bottom:8px; border-radius:8px;">
+                        <img src="${p.image}" style="width:60px; height:60px; object-fit:cover; border-radius:6px;">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; font-size:13px;">${p.title}</div>
+                            <div style="font-size:12px; color:#666;">بواسطة: ${p.user}</div>
+                            <span style="font-size:11px; padding:2px 6px; border-radius:6px; font-weight:bold; ${isApproved ? 'background:#e8f5e9; color:#2e7d32;' : 'background:#fff9c4; color:#f57f17;'}">
+                                ${isApproved ? 'منشور 🟢' : 'بانتظار الموافقة 🟡'}
+                            </span>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            ${!isApproved ? `<button onclick="approveCommunityPost('${p.id}')" style="background:var(--success); color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px;"><i class="fa-solid fa-check"></i> موافقة ونشر</button>` : ''}
+                            <button onclick="deleteCommunityPost('${p.id}')" style="background:#ffebee; color:var(--danger); border:1px solid var(--danger); padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px;"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.approveCommunityPost = async function(id) {
+            try { await updateDoc(doc(db, "community_posts", id), { status: 'approved' }); alert("تمت الموافقة ونشر الصورة بالمعرض ✨"); } catch(e){}
+        };
+
+        window.deleteCommunityPost = async function(id) {
+            if(confirm("هل أنت متأكد من حذف هذه الصورة؟")) {
+                try { await deleteDoc(doc(db, "community_posts", id)); } catch(e){}
+            }
+        };
 
         window.requestStockNotification = async function(pName) {
             const phone = prompt(`ادخل رقم هاتفك لتنبيهك فور توفر قطعة (${pName}):`);
@@ -912,7 +1035,6 @@
             });
         }
 
-        // طباعة الوصل المصححة
         window.printInvoice = function(orderId) {
             const ord = orders.find(o => o.id === orderId);
             if(!ord) return;
