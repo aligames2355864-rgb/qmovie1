@@ -125,31 +125,6 @@
         }
         .btn:hover { background-color: var(--secondary-brown); }
 
-        /* ستايل صفحة تفاصيل القطعة (على نمط أمازون) */
-        .detail-wrapper {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 15px; align-items: start;
-        }
-        @media (max-width: 768px) {
-            .detail-wrapper { grid-template-columns: 1fr; gap: 20px; }
-        }
-        .detail-img-box {
-            width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #eee;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: #fff; position: relative;
-        }
-        .detail-img-box img { width: 100%; max-height: 450px; object-fit: cover; display: block; }
-        .detail-info-box { display: flex; flex-direction: column; gap: 15px; }
-        .detail-price-tag { font-size: 26px; font-weight: bold; color: var(--primary-brown); }
-        .detail-desc-box {
-            background: #fdfbf9; border: 1px solid var(--light-brown); padding: 15px; border-radius: 10px;
-            font-size: 14px; line-height: 1.7; color: #444; white-space: pre-line;
-        }
-        .back-btn-header {
-            display: inline-flex; align-items: center; gap: 8px; background: #f0ebe6; color: var(--primary-brown);
-            border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;
-            transition: 0.2s; margin-bottom: 10px;
-        }
-        .back-btn-header:hover { background: var(--primary-brown); color: #fff; }
-
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: #fff; }
@@ -263,32 +238,36 @@
             <div class="products-grid" id="productsGrid">جاري تحميل المعروضات...</div>
         </section>
 
-        <!-- 🔍 صفحة تفاصيل القطعة الجديدة (على نمط أمازون والمتاجر) -->
+        <!-- 2. صفحة عرض تفاصيل القطعة -->
         <section id="product-detail-page" class="page-section">
-            <button class="back-btn-header" onclick="showPage('shop')"><i class="fa-solid fa-arrow-right"></i> رجوع للمتجر</button>
-            <div class="detail-wrapper">
-                <div class="detail-img-box">
-                    <span id="detailBadgeTag" class="badge-overlay" style="display:none; font-size:12px; padding:5px 12px;"></span>
-                    <img id="detailImgView" src="" alt="صورة القطعة">
+            <button class="btn" style="width: auto; margin-bottom: 15px; background: #666;" onclick="showPage('shop')">
+                <i class="fa-solid fa-arrow-right"></i> رجوع للمعرض
+            </button>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <div>
+                    <img id="detailImg" src="" style="width: 100%; max-height: 420px; object-fit: cover; border-radius: 10px; border: 1px solid #eee; background: #f9f9f9;">
                 </div>
-                <div class="detail-info-box">
-                    <div id="detailCatTags" class="tags-box"></div>
-                    <h1 id="detailTitleView" style="color: var(--primary-brown); font-size: 24px;">اسم القطعة</h1>
-                    <div class="detail-price-tag" id="detailPriceView">0 د.ع</div>
-                    <div class="points-badge-tag" id="detailPointsView" style="font-size: 13px; padding: 4px 10px;">+0 نقطة VIP 🌟</div>
-                    
-                    <div style="font-size:13px; font-weight:bold; margin-top:5px;" id="detailStockView"></div>
-
-                    <div class="detail-desc-box">
-                        <h4 style="color: var(--primary-brown); margin-bottom: 6px;"><i class="fa-solid fa-circle-info"></i> وصف القطعة والتفاصيل:</h4>
-                        <div id="detailDescText">لا يوجد وصف متاح حالياً لهذا المنتج.</div>
+                <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 15px;">
+                    <div>
+                        <div id="detailBadges" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;"></div>
+                        <h2 id="detailTitle" style="color: var(--primary-brown); font-size: 24px; margin-bottom: 10px;"></h2>
+                        <div id="detailPrice" style="font-size: 24px; font-weight: bold; color: var(--secondary-brown); margin-bottom: 10px;"></div>
+                        <div id="detailPoints" class="points-badge-tag" style="margin-bottom: 15px; font-size: 13px;"></div>
+                        
+                        <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 12px 0; margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-brown); margin-bottom: 6px;"><i class="fa-solid fa-circle-info"></i> وصف وتفاصيل القطعة:</h4>
+                            <p id="detailDesc" style="font-size: 14px; color: #555; line-height: 1.7; white-space: pre-line;"></p>
+                        </div>
+                        
+                        <div id="detailStock" style="font-size: 13px; font-weight: bold; margin-bottom: 15px;"></div>
                     </div>
-
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button id="detailAddToCartBtn" class="btn" style="padding: 12px; font-size: 15px; flex: 1;">
-                            <i class="fa-solid fa-bag-shopping"></i> إضافة إلى السلة
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button id="detailAddCartBtn" class="btn" style="padding: 12px; font-size: 15px; flex: 1;">
+                            <i class="fa-solid fa-cart-shopping"></i> إضافة إلى السلة
                         </button>
-                        <button id="detailAddToTrayBtn" class="icon-btn" style="padding: 12px 18px; font-size: 18px;" title="إضافة للخزانة والمفضلة 💖">
+                        <button id="detailAddTrayBtn" class="icon-btn" style="padding: 12px 18px; font-size: 18px;" title="حفظ لخزانتي 💖">
                             <i class="fa-solid fa-heart"></i>
                         </button>
                     </div>
@@ -296,20 +275,20 @@
             </div>
         </section>
 
-        <!-- 2. صفحة خزانة مجوهراتي -->
+        <!-- 3. صفحة خزانة مجوهراتي -->
         <section id="tray-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);"><i class="fa-solid fa-box-archive"></i> خزانة مجوهراتي (القطع المفضلة للتنسيق)</h2>
             <div class="products-grid" id="trayGrid">الخزانة فارغة حالياً. اضغط على أيقونة القلب على أي قطعة لإضافتها هنا!</div>
         </section>
 
-        <!-- 3. صفحة تتبع الطلبات التلقائية -->
+        <!-- 4. صفحة تتبع الطلبات التلقائية -->
         <section id="tracker-page" class="page-section">
             <h2 style="margin-bottom: 6px; color: var(--primary-brown);"><i class="fa-solid fa-truck-fast"></i> طلباتي وتتبع التوصيل</h2>
             <p style="font-size: 13px; color: #666; margin-bottom: 20px;">تظهر هنا جميع طلباتك المسجلة تلقائياً ومراحل تجهيزها وتوصيلها ✨</p>
             <div id="myOrdersListContainer" style="max-width: 650px; margin: 0 auto;">جاري تحميل طلباتك...</div>
         </section>
 
-        <!-- 4. صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
+        <!-- 5. صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
         <section id="profile-page" class="page-section">
             <div class="profile-card">
                 <img id="profileAvatarView" src="https://via.placeholder.com/100" class="profile-avatar-img">
@@ -336,14 +315,13 @@
                 </div>
             </div>
 
-            <!-- قائمة الجوائز والمكافآت المفتوحة -->
             <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-gift" style="color:var(--gold);"></i> جوائزك ومكافآتك الحالية (مداريون VIP)</h3>
                 <div id="userUnlockedRewardsList">جاري حساب مكافآتك...</div>
             </div>
         </section>
 
-        <!-- 5. مجتمع مداريون -->
+        <!-- 6. مجتمع مداريون -->
         <section id="community-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
                 <div>
@@ -379,7 +357,7 @@
             </div>
         </section>
 
-        <!-- 6. صفحة السلة -->
+        <!-- 7. صفحة السلة -->
         <section id="cart-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">سلة التسوق</h2>
             <table class="cart-table">
@@ -403,7 +381,7 @@
             </div>
         </section>
 
-        <!-- 7. صفحة معلومات الزبون -->
+        <!-- 8. صفحة معلومات الزبون -->
         <section id="checkout-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">معلومات التوصيل والزبون</h2>
             <form id="checkoutForm" onsubmit="handleCheckout(event)">
@@ -424,7 +402,7 @@
             </form>
         </section>
 
-        <!-- 8. لوحة تحكم الأدمن -->
+        <!-- 9. لوحة تحكم الأدمن -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -438,7 +416,7 @@
                 <div class="stat-card"><div>الطلبات المكتملة 🟢</div><div class="stat-num" id="statCompletedOrders">0</div></div>
             </div>
 
-            <!-- تحديد عتبات المكافآت والجوائز (أدمن مدار) -->
+            <!-- تحديد عتبات المكافآت والجوائز -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-award" style="color:var(--gold);"></i> نظام تحديد المكافآت وعتبات النقاط (مداريون VIP)</h3>
                 <form onsubmit="handleAddRewardRule(event)" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
@@ -449,7 +427,7 @@
                 <div id="adminRewardsConfigList">جاري تحميل المكافآت...</div>
             </div>
 
-            <!-- جدول ترتيب القطع الأكثر مبيعاً مع خيار الحذف -->
+            <!-- جدول ترتيب القطع الأكثر مبيعاً -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
                 <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-fire" style="color: #f57f17;"></i> ترتيب القطع الأكثر مبيعاً (خاص بالموظفين)</h3>
                 <table class="cart-table">
@@ -470,7 +448,7 @@
 
             <!-- إدارة منشورات كشخة مداريون -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
-                <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-images"></i> إدارة منشورات كشخة مداريون (موافقة وحذف)</h3>
+                <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-images"></i> إدارة منشورات كشخة مداريون</h3>
                 <div id="adminCommunityPostsList">جاري تحميل المنشورات...</div>
             </div>
 
@@ -513,12 +491,17 @@
                 </div>
             </div>
 
-            <!-- 📝 إضافة قطعة جديدة بالنقاط + الوصف (نظام الموظفين) -->
-            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة ووصفها ونقاطها</h3>
+            <!-- إضافة قطعة جديدة -->
+            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة ونقاطها ووصفها</h3>
             <form onsubmit="handleAddProduct(event)" style="margin-top: 12px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
                 <div class="form-row">
                     <div class="form-group"><label>اسم القطعة *</label><input type="text" id="pTitle" required></div>
                     <div class="form-group"><label>السعر (دينار) *</label><input type="number" id="pPrice" required></div>
+                </div>
+
+                <div class="form-group">
+                    <label>وصف وتفاصيل القطعة (الخامة، التصميم، العناية) *</label>
+                    <textarea id="pDesc" rows="3" placeholder="اكتب وصفاً جذاباً وتفصيلياً للقطعة هنا..." required></textarea>
                 </div>
 
                 <div class="form-row">
@@ -527,12 +510,6 @@
                         <input type="number" id="pPoints" placeholder="مثلاً 10 نقاط" required min="0">
                     </div>
                     <div class="form-group"><label>العدد المتوفر بالمخزون *</label><input type="number" id="pStock" required min="1"></div>
-                </div>
-
-                <!-- حقل إضافة وصف القطعة التلقائي للموظف -->
-                <div class="form-group">
-                    <label>وصف التفاصيل والمعلومات للقطعة (يظهر بصفحة المنتج) 📝</label>
-                    <textarea id="pDesc" rows="3" placeholder="اكتب تفاصيل خامة القطعة، المقاس، اللون، التنسيقات المقترحة..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -562,12 +539,65 @@
                 <button type="submit" class="btn" style="padding: 10px;">نشر القطعة بالمتجر والحفظ</button>
             </form>
 
-            <h3 style="margin-top: 25px;">المخزون الحالي</h3>
+            <h3 style="margin-top: 25px;">المخزون الحالي (مع زر التعديل والحذف)</h3>
             <table class="cart-table" style="margin-top: 10px;">
-                <thead><tr><th>اسم القطعة</th><th>الأقسام</th><th>السعر</th><th>النقاط</th><th>المتبقي</th><th>حذف</th></tr></thead>
+                <thead><tr><th>اسم القطعة</th><th>الأقسام</th><th>السعر</th><th>النقاط</th><th>المتبقي</th><th>إجراءات</th></tr></thead>
                 <tbody id="adminInventory"></tbody>
             </table>
         </section>
+    </div>
+
+    <!-- 🛠️ نافذة تعديل بيانات القطعة المنشورة -->
+    <div id="editProductModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 600px; text-align: right; max-height: 90vh; overflow-y: auto;">
+            <h3 style="color: var(--primary-brown); margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> تعديل بيانات القطعة المنشورة</h3>
+            <form onsubmit="handleSaveProductEdit(event)">
+                <input type="hidden" id="editPId">
+                <div class="form-row">
+                    <div class="form-group"><label>اسم القطعة *</label><input type="text" id="editPTitle" required></div>
+                    <div class="form-group"><label>السعر (دينار) *</label><input type="number" id="editPPrice" required></div>
+                </div>
+
+                <div class="form-group">
+                    <label>وصف وتفاصيل القطعة *</label>
+                    <textarea id="editPDesc" rows="3" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group"><label>نقاط الولاء المكتسبة 🌟 *</label><input type="number" id="editPPoints" required min="0"></div>
+                    <div class="form-group"><label>المخزون المتوفر *</label><input type="number" id="editPStock" required min="0"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>شارة القطعة (Badge)</label>
+                    <select id="editPBadge">
+                        <option value="">بدون شارة</option>
+                        <option value="وصل حديثاً 🔥">وصل حديثاً 🔥</option>
+                        <option value="الأكثر مبيعاً 🌟">الأكثر مبيعاً 🌟</option>
+                        <option value="قطعة أخيرة ⚠️">قطعة أخيرة ⚠️</option>
+                        <option value="عرض خاص ⚡">عرض خاص ⚡</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>الأقسام والتصنيفات *</label>
+                    <div id="editPCategoryCheckboxes" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background: #fafafa; border: 1px solid #ddd; border-radius: 6px;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>تغيير صورة القطعة (اختياري - اتركها إذا لا تريد التغيير):</label>
+                    <input type="file" id="editPImgFile" accept="image/*" style="padding: 6px;">
+                    <div id="editImgPreviewBox" style="margin-top: 8px;">
+                        <img id="editImgPreview" src="" style="width: 90px; height: 90px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="submit" class="btn" style="flex: 1; padding: 12px;"><i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات</button>
+                    <button type="button" class="btn" style="background: #666; width: 100px;" onclick="closeEditProductModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="successModal" class="modal-overlay">
@@ -612,6 +642,7 @@
         let deliveryFee = parseFloat(localStorage.getItem('madar_delivery')) || 5000;
         let selectedCategory = "الكل";
         let uploadedBase64Image = "";
+        let editedBase64Image = "";
         let uploadedCatBase64Image = "";
         let uploadedPostBase64Image = "";
         let uploadedProfileBase64Image = "";
@@ -718,6 +749,14 @@
             }
         });
 
+        document.getElementById('editPImgFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                editedBase64Image = await compressImage(file, 600);
+                document.getElementById('editImgPreview').src = editedBase64Image;
+            }
+        });
+
         document.getElementById('catImgFileInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) uploadedCatBase64Image = await compressImage(file, 200);
@@ -808,47 +847,34 @@
             }
         };
 
-        /* 🔍 فتح صفحة تفاصيل المنتج بأسلوب المتجر الاحترافي */
-        window.openProductDetails = function(productId) {
-            const p = products.find(prod => String(prod.id) === String(productId));
-            if(!p) return;
+        window.viewProductDetail = function(productId) {
+            const prod = products.find(p => String(p.id) === String(productId));
+            if(!prod) return;
 
-            document.getElementById('detailImgView').src = p.image || 'https://via.placeholder.com/350';
-            document.getElementById('detailTitleView').innerText = p.name;
-            document.getElementById('detailPriceView').innerText = Number(p.price).toLocaleString() + " د.ع";
-            document.getElementById('detailPointsView').innerText = `+${p.points || 0} نقطة VIP 🌟`;
-            
-            const descView = document.getElementById('detailDescText');
-            descView.innerText = (p.desc && p.desc.trim() !== "") ? p.desc : "إكسسوار مميز وعالي الجودة، مصمم بدقة وعناية ليناسب إطلالتك الراقية من متجر مدار ✨";
+            document.getElementById('detailImg').src = prod.image || 'https://via.placeholder.com/300';
+            document.getElementById('detailTitle').innerText = prod.name;
+            document.getElementById('detailPrice').innerText = Number(prod.price).toLocaleString() + " د.ع";
+            document.getElementById('detailPoints').innerText = `+${prod.points || 0} نقطة VIP 🌟`;
+            document.getElementById('detailDesc').innerText = prod.description || "لا يوجد وصف تفصيلي مضاف لهذه القطعة حتى الآن.";
 
-            const badgeTag = document.getElementById('detailBadgeTag');
-            if(p.badge && p.badge.trim() !== "") {
-                badgeTag.innerText = p.badge;
-                badgeTag.style.display = 'block';
-            } else {
-                badgeTag.style.display = 'none';
-            }
+            let catsHTML = Array.isArray(prod.category) ? prod.category.map(c => `<span class="product-cat-tag">${c}</span>`).join(' ') : `<span class="product-cat-tag">${prod.category || 'عام'}</span>`;
+            let badgeHTML = prod.badge ? `<span style="background:var(--primary-brown); color:#fff; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:bold;">${prod.badge}</span>` : '';
+            document.getElementById('detailBadges').innerHTML = badgeHTML + ' ' + catsHTML;
 
-            const catsBox = document.getElementById('detailCatTags');
-            if(Array.isArray(p.category)) {
-                catsBox.innerHTML = p.category.map(c => `<span class="product-cat-tag">${c}</span>`).join(' ');
-            } else {
-                catsBox.innerHTML = `<span class="product-cat-tag">${p.category || 'عام'}</span>`;
-            }
+            const isOut = prod.stock <= 0;
+            const stockElem = document.getElementById('detailStock');
+            stockElem.className = isOut ? 'out-stock' : 'in-stock';
+            stockElem.innerText = isOut ? 'نفذت الكمية' : `المتبقي بالمخزون: ${prod.stock} قطعة`;
 
-            const stockView = document.getElementById('detailStockView');
-            const isOut = p.stock <= 0;
-            stockView.innerHTML = isOut ? `<span class="out-stock">حالة المخزون: نفذت الكمية ⚠️</span>` : `<span class="in-stock">حالة المخزون: متوفر حالياً (${p.stock} قطعة) 🟢</span>`;
-
-            const addCartBtn = document.getElementById('detailAddToCartBtn');
-            addCartBtn.onclick = function() {
-                if(isOut) requestStockNotification(p.name);
-                else addToCart(p.id);
+            const cartBtn = document.getElementById('detailAddCartBtn');
+            cartBtn.onclick = function() {
+                if(isOut) { requestStockNotification(prod.name); }
+                else { addToCart(prod.id); }
             };
-            addCartBtn.innerHTML = isOut ? 'أنبهني عند التوفر 🔔' : '<i class="fa-solid fa-bag-shopping"></i> إضافة إلى السلة';
+            cartBtn.innerHTML = isOut ? '<i class="fa-solid fa-bell"></i> أنبهني عند التوفر' : '<i class="fa-solid fa-cart-shopping"></i> إضافة إلى السلة';
 
-            const addTrayBtn = document.getElementById('detailAddToTrayBtn');
-            addTrayBtn.onclick = function() { addToTray(p.id); };
+            const trayBtn = document.getElementById('detailAddTrayBtn');
+            trayBtn.onclick = function() { addToTray(prod.id); };
 
             showPage('product-detail');
         };
@@ -1019,11 +1045,11 @@
                 grid.innerHTML += `
                     <div class="product-card">
                         ${badgeHTML}
-                        <img src="${p.image || 'https://via.placeholder.com/150'}" class="product-img" onclick="openProductDetails('${p.id}')">
+                        <img src="${p.image || 'https://via.placeholder.com/150'}" class="product-img" onclick="viewProductDetail('${p.id}')">
                         <div class="product-info">
                             <div>
                                 <div class="tags-box">${tagsHTML}</div>
-                                <div class="product-title" onclick="openProductDetails('${p.id}')">${p.name}</div>
+                                <div class="product-title" onclick="viewProductDetail('${p.id}')">${p.name}</div>
                                 <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
                                 <div class="points-badge-tag">+${p.points || 0} نقطة VIP 🌟</div>
                             </div>
@@ -1074,10 +1100,10 @@
             items.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
-                        <img src="${p.image}" class="product-img" onclick="openProductDetails('${p.id}')">
+                        <img src="${p.image}" class="product-img" onclick="viewProductDetail('${p.id}')">
                         <div class="product-info">
                             <div>
-                                <div class="product-title" onclick="openProductDetails('${p.id}')">${p.name}</div>
+                                <div class="product-title" onclick="viewProductDetail('${p.id}')">${p.name}</div>
                                 <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
                             </div>
                             <div>
@@ -1298,23 +1324,86 @@
             cart = cart.filter(item => String(item.id) !== String(id)); saveCartToStorage(); updateCartBadge(); renderCart();
         };
 
-        /* 💾 حفظ وإضافة قطعة مع الوصف بنظام الموظف */
         window.handleAddProduct = async function(e) {
             e.preventDefault();
             if (!uploadedBase64Image) { alert("اختر صورة للقطعة من الاستوديو!"); return; }
             const selectedCats = Array.from(document.querySelectorAll('.cat-checkbox:checked')).map(cb => cb.value);
             const newProd = {
                 name: document.getElementById('pTitle').value,
+                description: document.getElementById('pDesc').value || '',
                 category: selectedCats.length > 0 ? selectedCats : ["عام"],
                 price: parseFloat(document.getElementById('pPrice').value),
                 points: parseInt(document.getElementById('pPoints').value) || 0,
                 stock: parseInt(document.getElementById('pStock').value),
                 badge: document.getElementById('pBadge').value,
-                desc: document.getElementById('pDesc').value.trim(),
                 image: uploadedBase64Image
             };
-            try { await addDoc(collection(db, "products"), newProd); alert("تم نشر القطعة ووصفها بنجاح بالمتجر!"); } catch(e){}
+            try { await addDoc(collection(db, "products"), newProd); alert("تم نشر القطعة بنجاح بالمتجر!"); } catch(e){}
             e.target.reset(); uploadedBase64Image = ""; document.getElementById('imgPreviewBox').style.display = 'none';
+        };
+
+        /* 📝 فتح نافذة تعديل قطعة بالبيانات الحالية */
+        window.openEditProductModal = function(productId) {
+            const prod = products.find(p => String(p.id) === String(productId));
+            if (!prod) return;
+
+            document.getElementById('editPId').value = prod.id;
+            document.getElementById('editPTitle').value = prod.name || '';
+            document.getElementById('editPPrice').value = prod.price || 0;
+            document.getElementById('editPDesc').value = prod.description || '';
+            document.getElementById('editPPoints').value = prod.points || 0;
+            document.getElementById('editPStock').value = prod.stock || 0;
+            document.getElementById('editPBadge').value = prod.badge || '';
+            
+            editedBase64Image = prod.image || '';
+            document.getElementById('editImgPreview').src = editedBase64Image;
+
+            const box = document.getElementById('editPCategoryCheckboxes');
+            box.innerHTML = '';
+            const prodCats = Array.isArray(prod.category) ? prod.category : [prod.category];
+
+            if (categories.length === 0) {
+                box.innerHTML = `<label style="font-size:12px;"><input type="checkbox" class="edit-cat-checkbox" value="عام" checked> عام</label>`;
+            } else {
+                categories.forEach(c => {
+                    const isChecked = prodCats.includes(c.name) ? 'checked' : '';
+                    box.innerHTML += `<label style="font-size:12px; display:flex; align-items:center; gap:4px;"><input type="checkbox" class="edit-cat-checkbox" value="${c.name}" ${isChecked}> ${c.name}</label>`;
+                });
+            }
+
+            document.getElementById('editProductModal').classList.add('active');
+        };
+
+        window.closeEditProductModal = function() {
+            document.getElementById('editProductModal').classList.remove('active');
+        };
+
+        /* 💾 حفظ تعديلات القطعة بقاعدة البيانات */
+        window.handleSaveProductEdit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editPId').value;
+            if(!id) return;
+
+            const selectedCats = Array.from(document.querySelectorAll('.edit-cat-checkbox:checked')).map(cb => cb.value);
+
+            const updatedData = {
+                name: document.getElementById('editPTitle').value.trim(),
+                price: parseFloat(document.getElementById('editPPrice').value),
+                description: document.getElementById('editPDesc').value.trim(),
+                points: parseInt(document.getElementById('editPPoints').value) || 0,
+                stock: parseInt(document.getElementById('editPStock').value),
+                badge: document.getElementById('editPBadge').value,
+                category: selectedCats.length > 0 ? selectedCats : ["عام"],
+                image: editedBase64Image
+            };
+
+            try {
+                await updateDoc(doc(db, "products", id), updatedData);
+                alert("تم تحديث بيانات القطعة بنجاح! ✨");
+                closeEditProductModal();
+            } catch(err) {
+                alert("حدث خطأ أثناء تعديل القطعة!");
+            }
         };
 
         window.handleCheckout = async function(e) {
@@ -1579,7 +1668,7 @@
                         alert("حدث خطأ أثناء الحذف!");
                     }
                 } else {
-                    alert("هذه القطعة غير موجودة بالمخزون الحالي.");
+                    alert("هذه القطعة غير موجودة بالمخزون الحالي (ربما تم حذفها سابقاً).");
                 }
             }
         };
@@ -1601,7 +1690,19 @@
             const tbody = document.getElementById('adminInventory'); tbody.innerHTML = '';
             products.forEach(p => {
                 const catStr = Array.isArray(p.category) ? p.category.join('، ') : (p.category || 'عام');
-                tbody.innerHTML += `<tr><td>${p.name}</td><td>${catStr}</td><td>${Number(p.price).toLocaleString()} د.ع</td><td><b>${p.points || 0}</b></td><td>${p.stock}</td><td><button onclick="deleteProduct('${p.id}')" style="color:red; border:none; background:none; cursor:pointer;">حذف</button></td></tr>`;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>${catStr}</td>
+                        <td>${Number(p.price).toLocaleString()} د.ع</td>
+                        <td><b>${p.points || 0}</b></td>
+                        <td>${p.stock}</td>
+                        <td>
+                            <button onclick="openEditProductModal('${p.id}')" style="color:var(--primary-brown); border:none; background:none; cursor:pointer; font-weight:bold; margin-left:8px;"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                            <button onclick="deleteProduct('${p.id}')" style="color:red; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </td>
+                    </tr>
+                `;
             });
         }
     </script>
