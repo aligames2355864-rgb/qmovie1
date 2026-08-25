@@ -23,7 +23,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
         body { background-color: #F9F9F9; color: var(--text-color); display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* شريط سفلي متجاوب تماماً للهواتف والآيباد والحاسبة */
         header {
             background-color: var(--primary-brown); color: white; padding: 10px 4%;
             display: flex; justify-content: space-between; align-items: center;
@@ -173,7 +172,7 @@
 </head>
 <body>
 
-    <!-- نافذة تسجيل الدخول الإجبارية -->
+    <!-- شاشة تسجيل الدخول الإجبارية -->
     <div id="mandatoryLoginModal" class="mandatory-modal-overlay">
         <div class="mandatory-modal-box">
             <i class="fa-solid fa-gem" style="font-size: 45px; color: var(--primary-brown); margin-bottom: 12px;"></i>
@@ -232,16 +231,13 @@
             <div class="products-grid" id="trayGrid">الخزانة فارغة حالياً. اضغط على أيقونة القلب على أي قطعة لإضافتها هنا!</div>
         </section>
 
-        <!-- 3. صفحة تتبع الطلب -->
+        <!-- 3. صفحة تتبع الطلبات التلقائية المحدثة -->
         <section id="tracker-page" class="page-section">
-            <h2 style="margin-bottom: 15px; color: var(--primary-brown);"><i class="fa-solid fa-truck-fast"></i> تتبع حالة طلبك</h2>
-            <div style="max-width: 450px; margin: 0 auto; background: #fdfbf9; padding: 20px; border-radius: 10px; border: 1px solid var(--light-brown);">
-                <div class="form-group">
-                    <label>ادخل رقم الهاتف المسجل بالطلب:</label>
-                    <input type="tel" id="trackPhoneInput" placeholder="077XXXXXXXX">
-                </div>
-                <button class="btn" onclick="trackOrder()">بحث عن الطلب</button>
-                <div id="trackResultBox" style="margin-top: 20px;"></div>
+            <h2 style="margin-bottom: 6px; color: var(--primary-brown);"><i class="fa-solid fa-truck-fast"></i> طلباتي وتتبع التوصيل</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">تظهر هنا جميع طلباتك المسجلة تلقائياً ومراحل تجهيزها وتوصيلها ✨</p>
+            
+            <div id="myOrdersListContainer" style="max-width: 650px; margin: 0 auto;">
+                جاري تحميل طلباتك...
             </div>
         </section>
 
@@ -559,6 +555,7 @@
             }
 
             checkMandatoryLoginState();
+            renderCustomerOrders();
         };
 
         window.logoutUser = function() {
@@ -627,7 +624,7 @@
         onSnapshot(collection(db, "orders"), (snapshot) => {
             orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            renderAdminOrders(); updateAnalytics();
+            renderAdminOrders(); updateAnalytics(); renderCustomerOrders();
         });
 
         onSnapshot(collection(db, "stock_notifications"), (snapshot) => {
@@ -672,6 +669,7 @@
             document.getElementById(`${pageId}-page`).classList.add('active');
             if(pageId === 'cart') renderCart();
             if(pageId === 'tray') renderTray();
+            if(pageId === 'tracker') renderCustomerOrders();
             if(pageId === 'admin-dashboard') {
                 document.getElementById('deliveryInput').value = deliveryFee;
                 renderAdminOrders(); renderAdminInventory(); renderAdminCategories(); updateCategoryDropdown(); updateAnalytics(); renderAdminCommunityPosts();
@@ -935,23 +933,52 @@
 
         window.deleteStockNotification = async function(id) { try { await deleteDoc(doc(db, "stock_notifications", id)); } catch(e){} };
 
-        window.trackOrder = function() {
-            const phone = document.getElementById('trackPhoneInput').value.trim();
-            const resBox = document.getElementById('trackResultBox'); resBox.innerHTML = '';
-            if(!phone) { alert("ادخل رقم الهاتف!"); return; }
-            const myOrders = orders.filter(o => o.custPhone1 === phone || o.custPhone2 === phone);
-            if(myOrders.length === 0) { resBox.innerHTML = '<p style="color:red; font-size:13px;">لم نجد طلبات مرتبطة بهذا الرقم.</p>'; return; }
+        /* 📦 عرض طلبات الزبون التلقائية بناءً على يوزه الموفر بدخول الموقع */
+        function renderCustomerOrders() {
+            const container = document.getElementById('myOrdersListContainer');
+            if(!container) return;
+            container.innerHTML = '';
 
-            myOrders.forEach(o => {
-                resBox.innerHTML += `
-                    <div style="background:#fff; border:1px solid #ddd; padding:12px; border-radius:8px; margin-bottom:10px;">
-                        <div style="font-weight:bold; font-size:13px;">طلب بقيمة: ${Number(o.grandTotal).toLocaleString()} د.ع</div>
-                        <div style="font-size:12px; color:#555; margin:4px 0;">حالة الطلب الحالية: <b>${o.status || 'جديد'}</b></div>
-                        <div style="font-size:11px; color:#888;">العنوان: ${o.custGov} - ${o.custAddress}</div>
+            const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
+            if(!savedUser || !savedUser.username) {
+                container.innerHTML = '<p style="text-align:center; color:#777; padding:20px;">يرجى تسجيل الدخول لمشاهدة طلباتك تلقائياً.</p>';
+                return;
+            }
+
+            const myOrders = orders.filter(o => 
+                (o.custInsta && o.custInsta.trim().toLowerCase() === savedUser.username.trim().toLowerCase()) ||
+                (o.custName && o.custName.trim().toLowerCase() === savedUser.name.trim().toLowerCase())
+            );
+
+            if(myOrders.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888; padding:30px; background:#fff; border-radius:10px; border:1px solid #eee;">لا توجد لديك طلبات سابقة مسجلة حتى الآن 📦</p>';
+                return;
+            }
+
+            myOrders.forEach(ord => {
+                let statusClass = 'status-new';
+                if(ord.status === 'قيد التجهيز') statusClass = 'status-processing';
+                if(ord.status === 'تم التسليم') statusClass = 'status-delivered';
+                if(ord.status === 'ملغي') statusClass = 'status-cancelled';
+
+                const itemsFormatted = ord.items ? ord.items.map(i => `• ${i.name} (عدد: ${i.qty})`).join('<br>') : '';
+
+                container.innerHTML += `
+                    <div class="order-card" style="margin-bottom:15px;">
+                        <div class="order-header">
+                            <div><strong>طلب للزبون: ${ord.custName}</strong></div>
+                            <div><span class="order-status-badge ${statusClass}">${ord.status || 'جديد'}</span></div>
+                        </div>
+                        <div style="font-size:13px; line-height:1.6; margin-bottom:8px;">
+                            📞 <b>الهاتف:</b> ${ord.custPhone1} | 📍 <b>المحافظة:</b> ${ord.custGov} - ${ord.custAddress}<br>
+                            ${ord.giftMessage ? `🎁 <b>رسالة الهدايا/QR:</b> ${ord.giftMessage}<br>` : ''}
+                            <div style="background:#fdfbf9; padding:8px; border-radius:6px; margin:6px 0; border:1px solid #eee;"><b>القطع المطلوبة:</b><br>${itemsFormatted}</div>
+                            💳 <b>المبلغ الإجمالي:</b> <span style="color:var(--primary-brown); font-weight:bold;">${Number(ord.grandTotal || 0).toLocaleString()} د.ع</span>
+                        </div>
                     </div>
                 `;
             });
-        };
+        }
 
         window.handleAddLoyaltyPoints = async function(e) {
             e.preventDefault();
@@ -1026,11 +1053,12 @@
             e.preventDefault();
             if(cart.length === 0) { alert("السلة فارغة!"); return; }
 
+            const savedUser = JSON.parse(localStorage.getItem('madar_user_session')) || {};
             const giftMsg = document.getElementById('giftMessageInput').value.trim();
 
             const orderData = {
-                custName: document.getElementById('custName').value,
-                custInsta: document.getElementById('custInsta').value,
+                custName: document.getElementById('custName').value || savedUser.name || 'زبون',
+                custInsta: document.getElementById('custInsta').value || savedUser.username || 'غير محدد',
                 custPhone1: document.getElementById('custPhone1').value,
                 custPhone2: document.getElementById('custPhone2').value || 'لا يوجد',
                 custGov: document.getElementById('custGov').value,
@@ -1110,7 +1138,6 @@
             });
         }
 
-        /* 💡 دالة طباعة الوصل المتوافقة 100% مع iOS Safari عبر Frame خاص */
         window.printInvoice = function(orderId) {
             const ord = orders.find(o => o.id === orderId);
             if(!ord) return;
@@ -1161,11 +1188,9 @@
                 </html>
             `;
 
-            // إزالة أي إطار طباعة سابق إن وجد
             let oldIframe = document.getElementById('safariPrintFrame');
             if(oldIframe) oldIframe.remove();
 
-            // إنشاء إطار مخفي للطباعة المباشرة على آيفون وسفاري
             const iframe = document.createElement('iframe');
             iframe.id = 'safariPrintFrame';
             iframe.style.position = 'fixed';
@@ -1181,7 +1206,6 @@
             frameDoc.write(invoiceHTML);
             frameDoc.close();
 
-            // استدعاء الطباعة بعد تحميل الصور في سفاري
             iframe.contentWindow.focus();
             setTimeout(() => {
                 iframe.contentWindow.print();
