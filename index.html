@@ -23,31 +23,40 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
         body { background-color: #F9F9F9; color: var(--text-color); display: flex; flex-direction: column; min-height: 100vh; }
 
+        /* شريط سفلي متجاوب تماماً للهواتف والآيباد والحاسبة */
         header {
-            background-color: var(--primary-brown); color: white; padding: 12px 4%;
+            background-color: var(--primary-brown); color: white; padding: 10px 4%;
             display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; width: 100%;
+            flex-wrap: wrap; gap: 10px;
         }
 
-        header .logo { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        nav ul { display: flex; list-style: none; gap: 12px; align-items: center; flex-wrap: wrap; }
-        nav a { color: white; text-decoration: none; font-weight: 500; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 5px; font-size: 13px; }
-        nav a:hover { color: var(--light-brown); }
+        header .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; }
+        
+        nav { overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+        nav::-webkit-scrollbar { display: none; }
+
+        nav ul { display: flex; list-style: none; gap: 8px; align-items: center; white-space: nowrap; }
+        nav a {
+            color: white; text-decoration: none; font-weight: 500; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 4px; font-size: 13px; padding: 6px 10px; border-radius: 6px;
+        }
+        nav a:hover { background: rgba(255, 255, 255, 0.12); color: var(--light-brown); }
 
         .staff-nav-btn {
-            background: rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 20px;
-            border: 1px solid var(--gold); color: var(--gold) !important; font-weight: bold;
+            background: rgba(255, 255, 255, 0.2); border: 1px solid var(--gold);
+            color: var(--gold) !important; font-weight: bold; border-radius: 20px !important;
         }
         .staff-nav-btn:hover { background: var(--gold); color: #000 !important; }
 
         .cart-icon { position: relative; }
         .cart-badge {
-            position: absolute; top: -8px; left: -10px; background-color: var(--secondary-brown);
-            color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; border: 2px solid var(--primary-brown);
+            position: absolute; top: -6px; left: -8px; background-color: var(--secondary-brown);
+            color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; border: 2px solid var(--primary-brown);
         }
 
         .container {
-            width: 95%; max-width: 1250px; margin: 20px auto; padding: 20px; flex: 1;
+            width: 95%; max-width: 1250px; margin: 15px auto; padding: 20px; flex: 1;
             background-color: var(--bg-white); border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.03);
         }
 
@@ -71,8 +80,14 @@
             display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; width: 100%; margin-top: 15px;
         }
 
-        @media (max-width: 600px) {
-            .container { width: 98%; padding: 10px; }
+        /* تحسين التجاوب للهواتف والأيباد */
+        @media (max-width: 768px) {
+            header { padding: 8px 12px; justify-content: center; }
+            header .logo { font-size: 18px; width: 100%; justify-content: center; margin-bottom: 4px; }
+            nav { width: 100%; }
+            nav ul { justify-content: flex-start; padding-bottom: 4px; }
+            nav a { font-size: 12px; padding: 5px 8px; }
+            .container { width: 98%; padding: 12px; margin: 10px auto; }
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         }
 
@@ -108,7 +123,6 @@
             display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px;
         }
         .btn:hover { background-color: var(--secondary-brown); }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; }
@@ -135,6 +149,17 @@
         .stat-card { background: #fdfbf9; border: 1px solid var(--light-brown); border-radius: 10px; padding: 15px; text-align: center; }
         .stat-num { font-size: 22px; font-weight: bold; color: var(--primary-brown); margin-top: 5px; }
 
+        /* الشاشة الإجبارية لتسجيل الدخول */
+        .mandatory-modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(40, 25, 15, 0.92); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .mandatory-modal-box {
+            background: #fff; padding: 30px 25px; border-radius: 18px; text-align: center;
+            max-width: 420px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
@@ -144,13 +169,13 @@
 
         footer {
             text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto;
-            display: flex; justify-content: space-between; align-items: center; padding-left: 5%; padding-right: 5%;
+            display: flex; justify-content: space-between; align-items: center; padding-left: 5%; padding-right: 5%; flex-wrap: wrap; gap: 8px;
         }
 
         #printableInvoice { display: none; }
         @media print {
             body { background: #fff !important; margin: 0 !important; padding: 0 !important; color: #000 !important; }
-            header, nav, .container, footer, .modal-overlay { display: none !important; }
+            header, nav, .container, footer, .modal-overlay, .mandatory-modal-overlay { display: none !important; }
             #printableInvoice {
                 display: block !important; position: absolute !important; left: 0 !important; top: 0 !important;
                 width: 100% !important; margin: 0 !important; padding: 10px !important;
@@ -161,23 +186,47 @@
 </head>
 <body>
 
-    <!-- الشريط العلوي الخالص للزبائن -->
+    <!-- نافذة تسجيل الدخول الإجبارية كشرط لدخول المتجر -->
+    <div id="mandatoryLoginModal" class="mandatory-modal-overlay">
+        <div class="mandatory-modal-box">
+            <i class="fa-solid fa-gem" style="font-size: 45px; color: var(--primary-brown); margin-bottom: 12px;"></i>
+            <h2 style="color: var(--primary-brown); margin-bottom: 6px;">مَــدَار | MADAR</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">أهلاً بك! يرجى تسجيل دخولك للانتقال وتصفح إكسسوارات المتجر ✨</p>
+            
+            <form onsubmit="handleMandatoryLoginSubmit(event)">
+                <div class="form-group" style="text-align: right;">
+                    <label>الاسم (الاسم الكامل) *</label>
+                    <input type="text" id="mandNameInput" placeholder="ادخل اسمك هنا..." required>
+                </div>
+                <div class="form-group" style="text-align: right;">
+                    <label>اسم المستخدم (اليوزر) *</label>
+                    <input type="text" id="mandUserInput" placeholder="ادخل اليوزر..." required>
+                </div>
+                <button type="submit" class="btn" style="padding: 12px; font-size: 15px; margin-top: 10px; background-color: var(--primary-brown);">
+                    <i class="fa-solid fa-right-to-bracket"></i> دخول إلى المتجر
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- الشريط العلوي المتجاوب للهواتف والأجهزة -->
     <header>
         <div class="logo" onclick="showPage('shop')"><i class="fa-solid fa-gem"></i> مَــدَار | MADAR</div>
         <nav>
             <ul>
                 <li><a onclick="showPage('shop')"><i class="fa-solid fa-store"></i> المعرض</a></li>
                 <li><a onclick="showPage('tray')"><i class="fa-solid fa-box-archive"></i> خزانتـي (<span id="trayBadge">0</span>)</a></li>
-                <li><a onclick="showPage('tracker')"><i class="fa-solid fa-truck-fast"></i> تتبع الطلب</a></li>
+                <li><a onclick="showPage('tracker')"><i class="fa-solid fa-truck-fast"></i> التتبع</a></li>
                 <li><a onclick="showPage('community')"><i class="fa-solid fa-users"></i> مداريون</a></li>
                 <li><a onclick="showPage('cart')" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i> السلة <span class="cart-badge" id="cartBadge">0</span></a></li>
                 
-                <!-- ينشط فقط بعد التوثيق بنجاح -->
+                <!-- زر لوحة الموظفين (يفتح فقط إذا تم تسجيل الدخول بـ بيبو و aliteba11mdr) -->
                 <li id="navStaffBtn" style="display: none;">
-                    <a onclick="showPage('admin-dashboard')" class="staff-nav-btn"><i class="fa-solid fa-sliders"></i> لوحة الكادر</a>
+                    <a onclick="showPage('admin-dashboard')" class="staff-nav-btn"><i class="fa-solid fa-sliders"></i> لوحة الموظفين ⚙️</a>
                 </li>
-                <li id="navLogoutBtn" style="display: none;">
-                    <a onclick="logoutStaff()" style="color: #ff8a80;"><i class="fa-solid fa-power-off"></i> خروج</a>
+                
+                <li id="navUserInfo" style="display: none;">
+                    <a onclick="logoutUser()" style="color: #ff8a80; font-size: 12px;"><i class="fa-solid fa-power-off"></i> خروج (<span id="userDisplayName"></span>)</a>
                 </li>
             </ul>
         </nav>
@@ -291,20 +340,7 @@
             </form>
         </section>
 
-        <!-- 7. صفحة تسجيل دخول الكادر الآمنة والمشفرة (مفصولة) -->
-        <section id="login-page" class="page-section">
-            <h2 style="margin-bottom: 15px; color: var(--primary-brown); text-align: center;"><i class="fa-solid fa-lock"></i> تسجيل دخول كادر إدارة مدار</h2>
-            <p style="text-align: center; font-size: 13px; color: #777; margin-bottom: 20px;">هذه البوابة مخصصة ومحمية إلكترونياً لإدارة المتجر فقط</p>
-            <form onsubmit="handleSecureStaffLogin(event)" style="max-width: 380px; margin: 0 auto; background: #fdfbf9; padding: 25px; border-radius: 12px; border: 1px solid var(--light-brown); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <div class="form-group">
-                    <label>رمز المعرف الخاص / الكود</label>
-                    <input type="password" id="staffPasscode" placeholder="ادخل رمز الدخول المشفر..." required style="letter-spacing: 2px;">
-                </div>
-                <button type="submit" class="btn" style="padding: 10px; font-size: 14px;"><i class="fa-solid fa-key"></i> توثيق ودخول اللوحة</button>
-            </form>
-        </section>
-
-        <!-- 8. لوحة تحكم الأدمن المتقدمة (محمية ومغلقة إلكترونياً) -->
+        <!-- 7. لوحة تحكم الأدمن المتقدمة (تظهر فقط عند دخول بيبو و aliteba11mdr) -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -451,14 +487,11 @@
 
     <footer>
         <div>جميع الحقوق محفوظة لـ متجر مدار للإكسسوارات &copy; 2026</div>
-        <div>
-            <a onclick="showPage('login')" style="color: #999; text-decoration: none; font-size: 11px; cursor: pointer;"><i class="fa-solid fa-lock"></i> دخول الكادر 🔒</a>
-        </div>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCKvjwxDo99u7OKMfvtyYZoZOFH2e-LGsI",
@@ -473,17 +506,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // بصمة التشفير الخاصة لرمز الدخول (مستخرجة بـ SHA-256 لمنع كشف الرمز المباشر)
-        const SECURE_PASS_HASH = "8c60a4f5f9c546dbf76c12b3223126e0332304856f68744b8022b7a0f62d7c50"; // Hash of aliteba11mdr
-
-        async function computeSHA256(text) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(text);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         let products = JSON.parse(localStorage.getItem('madar_saved_products')) || [];
         let categories = JSON.parse(localStorage.getItem('madar_saved_categories')) || [];
         let orders = [];
@@ -497,6 +519,75 @@
         let uploadedBase64Image = "";
         let uploadedCatBase64Image = "";
         let uploadedPostBase64Image = "";
+
+        // إدارة الدخول الإجباري للموقع
+        window.checkMandatoryLoginState = function() {
+            const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
+            const modal = document.getElementById('mandatoryLoginModal');
+            const navStaffBtn = document.getElementById('navStaffBtn');
+            const navUserInfo = document.getElementById('navUserInfo');
+            const userDisplayName = document.getElementById('userDisplayName');
+
+            if (savedUser && savedUser.name && savedUser.username) {
+                modal.style.display = 'none';
+                navUserInfo.style.display = 'block';
+                userDisplayName.innerText = savedUser.name;
+
+                // التثبت إذا كان الدخول من كادر الإدارة (بيبو)
+                if ((savedUser.name.trim() === "بيبو" || savedUser.name.trim().includes("بيبو")) && savedUser.username.trim() === "aliteba11mdr") {
+                    navStaffBtn.style.display = 'block';
+                } else {
+                    navStaffBtn.style.display = 'none';
+                }
+            } else {
+                modal.style.display = 'flex';
+                navStaffBtn.style.display = 'none';
+                navUserInfo.style.display = 'none';
+            }
+        };
+
+        window.handleMandatoryLoginSubmit = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('mandNameInput').value.trim();
+            const username = document.getElementById('mandUserInput').value.trim();
+
+            if (!name || !username) {
+                alert("يرجى كتابة الاسم واليوزر لتسجيل الدخول!");
+                return;
+            }
+
+            const isStaff = (name === "بيبو" || name.includes("بيبو")) && (username === "aliteba11mdr");
+
+            const userSession = {
+                name: name,
+                username: username,
+                isStaff: isStaff
+            };
+
+            localStorage.setItem('madar_user_session', JSON.stringify(userSession));
+
+            // ملء بيانات الزبون تلقائياً في الطلب لتسهيل الشراء
+            const custNameField = document.getElementById('custName');
+            const custInstaField = document.getElementById('custInsta');
+            if(custNameField) custNameField.value = name;
+            if(custInstaField) custInstaField.value = username;
+
+            if (isStaff) {
+                alert("مرحباً بيبو ودودي ✨💖 نورتوا المتجر ولوحة الإدارة جاهزة لكم الآن 🌸");
+            } else {
+                alert(`أهلاً وسهلاً بك (${name}) في متجر مدار للإكسسوارات ✨`);
+            }
+
+            checkMandatoryLoginState();
+        };
+
+        window.logoutUser = function() {
+            if(confirm("هل تريد تسجيل الخروج من المتجر؟")) {
+                localStorage.removeItem('madar_user_session');
+                checkMandatoryLoginState();
+                showPage('shop');
+            }
+        };
 
         function compressImage(file, maxDim = 600) {
             return new Promise((resolve) => {
@@ -584,16 +675,16 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            checkStaffStatus(); updateCartBadge(); updateTrayBadge();
+            checkMandatoryLoginState();
+            updateCartBadge(); updateTrayBadge();
             renderCategoriesBar(); renderAdminCategories(); updateCategoryDropdown(); renderProducts();
         });
 
         window.showPage = function(pageId) {
             if(pageId === 'admin-dashboard') {
-                const isStaff = sessionStorage.getItem('madar_auth_staff') === 'true';
-                if(!isStaff) {
-                    alert("عذراً، هذه الصفحة مغلقة وتحتاج توثيق الكادر أولاً!");
-                    showPage('login');
+                const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
+                if(!savedUser || !savedUser.isStaff) {
+                    alert("عذراً، هذه اللوحة خاصة بكادر إدارة مدار فقط!");
                     return;
                 }
             }
@@ -659,36 +750,6 @@
             selectedCategory = catName;
             document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
             btn.classList.add('active'); renderProducts();
-        };
-
-        // فحص التوثيق والتشفير الآمن للدخول
-        window.handleSecureStaffLogin = async function(e) {
-            e.preventDefault();
-            const pass = document.getElementById('staffPasscode').value.trim();
-            const hashedInput = await computeSHA256(pass);
-
-            // مطابقة البصمة المشفرة
-            if (hashedInput === SECURE_PASS_HASH || pass === "aliteba11mdr") {
-                sessionStorage.setItem('madar_auth_staff', 'true');
-                checkStaffStatus();
-                alert("مرحباً بيبو ودودي بموقعكم الخاص ✨💖 تم توثيق الدخول بنجاح 🌸");
-                showPage('admin-dashboard');
-                e.target.reset();
-            } else {
-                alert("رمز الدخول غير صحيح! التواجد محصور بإدارة المتجر فقط.");
-            }
-        };
-
-        function checkStaffStatus() {
-            const isStaff = sessionStorage.getItem('madar_auth_staff') === 'true';
-            document.getElementById('navStaffBtn').style.display = isStaff ? 'block' : 'none';
-            document.getElementById('navLogoutBtn').style.display = isStaff ? 'block' : 'none';
-        }
-
-        window.logoutStaff = function() {
-            sessionStorage.removeItem('madar_auth_staff');
-            checkStaffStatus();
-            showPage('shop');
         };
 
         function renderProducts() {
