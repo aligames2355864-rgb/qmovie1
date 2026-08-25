@@ -107,6 +107,8 @@
         .product-cat-tag { font-size: 10px; background: #f5efe8; color: var(--secondary-brown); padding: 2px 6px; border-radius: 8px; font-weight: bold; }
         .product-title { font-size: 14px; font-weight: 700; color: #222; margin: 2px 0; }
         .product-price { color: var(--secondary-brown); font-weight: 700; font-size: 14px; }
+        .points-badge-tag { font-size: 11px; color: #d81b60; font-weight: bold; background: #fce4ec; padding: 2px 6px; border-radius: 6px; width: fit-content; }
+        
         .stock-tag { font-size: 11px; }
         .in-stock { color: var(--success); }
         .out-stock { color: var(--danger); font-weight: bold; }
@@ -164,6 +166,16 @@
         .modal-overlay.active { display: flex; }
         .modal-box { background: #fff; padding: 25px; border-radius: 15px; text-align: center; max-width: 450px; width: 90%; }
 
+        /* تصميم كارت الملف الشخصي والمكافآت */
+        .profile-card {
+            background: #fff; border-radius: 15px; padding: 20px; border: 1px solid var(--light-brown);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); max-width: 600px; margin: 0 auto 20px auto; text-align: center;
+        }
+        .profile-avatar-img {
+            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--primary-brown); margin-bottom: 10px;
+        }
+
         footer {
             text-align: center; padding: 15px; background-color: #eaeaea; color: #666; font-size: 13px; margin-top: auto;
             display: flex; justify-content: space-between; align-items: center; padding-left: 5%; padding-right: 5%; flex-wrap: wrap; gap: 8px;
@@ -204,6 +216,7 @@
                 <li><a onclick="showPage('tray')"><i class="fa-solid fa-box-archive"></i> خزانتـي (<span id="trayBadge">0</span>)</a></li>
                 <li><a onclick="showPage('tracker')"><i class="fa-solid fa-truck-fast"></i> التتبع</a></li>
                 <li><a onclick="showPage('community')"><i class="fa-solid fa-users"></i> مداريون</a></li>
+                <li><a onclick="showPage('profile')"><i class="fa-solid fa-user-gear"></i> ملفي الشخصي 👤</a></li>
                 <li><a onclick="showPage('cart')" class="cart-icon"><i class="fa-solid fa-bag-shopping"></i> السلة <span class="cart-badge" id="cartBadge">0</span></a></li>
                 
                 <li id="navStaffBtn" style="display: none;">
@@ -231,17 +244,48 @@
             <div class="products-grid" id="trayGrid">الخزانة فارغة حالياً. اضغط على أيقونة القلب على أي قطعة لإضافتها هنا!</div>
         </section>
 
-        <!-- 3. صفحة تتبع الطلبات التلقائية المحدثة -->
+        <!-- 3. صفحة تتبع الطلبات التلقائية -->
         <section id="tracker-page" class="page-section">
             <h2 style="margin-bottom: 6px; color: var(--primary-brown);"><i class="fa-solid fa-truck-fast"></i> طلباتي وتتبع التوصيل</h2>
             <p style="font-size: 13px; color: #666; margin-bottom: 20px;">تظهر هنا جميع طلباتك المسجلة تلقائياً ومراحل تجهيزها وتوصيلها ✨</p>
-            
-            <div id="myOrdersListContainer" style="max-width: 650px; margin: 0 auto;">
-                جاري تحميل طلباتك...
+            <div id="myOrdersListContainer" style="max-width: 650px; margin: 0 auto;">جاري تحميل طلباتك...</div>
+        </section>
+
+        <!-- 4. جديد: صفحة الملف الشخصي ورتب الزبون (مداريون VIP) -->
+        <section id="profile-page" class="page-section">
+            <div class="profile-card">
+                <img id="profileAvatarView" src="https://via.placeholder.com/100" class="profile-avatar-img">
+                <h2 id="profileNameView" style="color: var(--primary-brown);">اسم الزبون</h2>
+                <p id="profileUserView" style="color: #777; font-size: 13px; margin-bottom: 10px;">@username</p>
+                
+                <div style="background: #fff8e1; border: 1px solid var(--gold); padding: 12px; border-radius: 10px; margin-bottom: 15px;">
+                    <span style="font-size: 14px; font-weight: bold;">رصيد نقاطك الكلي 🌟:</span>
+                    <span id="profilePointsView" style="font-size: 20px; font-weight: bold; color: var(--primary-brown); margin-right: 5px;">0</span> نقطة
+                </div>
+
+                <button class="btn" style="width: auto; margin: 0 auto 15px auto;" onclick="toggleEditProfileBox()"><i class="fa-solid fa-pen-to-square"></i> تعديل الصورة والاسم</button>
+
+                <div id="editProfileBox" style="display: none; background: #fafafa; padding: 15px; border-radius: 10px; text-align: right; margin-top: 10px; border: 1px solid #ddd;">
+                    <div class="form-group">
+                        <label>الاسم الجديد:</label>
+                        <input type="text" id="editProfileNameInput">
+                    </div>
+                    <div class="form-group">
+                        <label>تغيير الصورة الشخصية (من الاستوديو):</label>
+                        <input type="file" id="editProfileImgFile" accept="image/*">
+                    </div>
+                    <button class="btn" onclick="saveProfileChanges()">حفظ التعديلات</button>
+                </div>
+            </div>
+
+            <!-- قائمة الجوائز والمكافآت المفتوحة -->
+            <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+                <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-gift" style="color:var(--gold);"></i> جوائزك ومكافآتك الحالية (مداريون VIP)</h3>
+                <div id="userUnlockedRewardsList">جاري حساب مكافآتك...</div>
             </div>
         </section>
 
-        <!-- 4. مجتمع مداريون -->
+        <!-- 5. مجتمع مداريون -->
         <section id="community-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
                 <div>
@@ -277,7 +321,7 @@
             </div>
         </section>
 
-        <!-- 5. صفحة السلة -->
+        <!-- 6. صفحة السلة -->
         <section id="cart-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">سلة التسوق</h2>
             <table class="cart-table">
@@ -301,7 +345,7 @@
             </div>
         </section>
 
-        <!-- 6. صفحة معلومات الزبون -->
+        <!-- 7. صفحة معلومات الزبون -->
         <section id="checkout-page" class="page-section">
             <h2 style="margin-bottom: 15px; color: var(--primary-brown);">معلومات التوصيل والزبون</h2>
             <form id="checkoutForm" onsubmit="handleCheckout(event)">
@@ -322,7 +366,7 @@
             </form>
         </section>
 
-        <!-- 7. لوحة تحكم الأدمن -->
+        <!-- 8. لوحة تحكم الأدمن -->
         <section id="admin-dashboard-page" class="page-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff8e1; padding: 15px; border-radius: 8px;">
                 <h2 style="color: var(--primary-brown);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> لوحة تحكم الموظفين (أدمن مدار)</h2>
@@ -334,6 +378,17 @@
                 <div class="stat-card"><div>إجمالي المبيعات والأرباح 💳</div><div class="stat-num" id="statRevenue">0 د.ع</div></div>
                 <div class="stat-card"><div>عدد الطلبات الكلي 📦</div><div class="stat-num" id="statOrdersCount">0</div></div>
                 <div class="stat-card"><div>الطلبات المكتملة 🟢</div><div class="stat-num" id="statCompletedOrders">0</div></div>
+            </div>
+
+            <!-- جديد: تحديد عتبات المكافآت والجوائز (أدمن مدار) -->
+            <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
+                <h3 style="color: var(--primary-brown); margin-bottom: 12px;"><i class="fa-solid fa-award" style="color:var(--gold);"></i> نظام تحديد المكافآت وعتبات النقاط (مداريون VIP)</h3>
+                <form onsubmit="handleAddRewardRule(event)" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <input type="number" id="rewardMinPointsInput" placeholder="حد النقاط (مثلاً 100)" required style="width: 150px;">
+                    <input type="text" id="rewardTitleInput" placeholder="تفاصيل الهدية (مثلاً سوار أو خصم 10%)" required style="flex:1;">
+                    <button type="submit" class="btn" style="width: 150px;">إضافة المكافأة</button>
+                </form>
+                <div id="adminRewardsConfigList">جاري تحميل المكافآت...</div>
             </div>
 
             <!-- جدول ترتيب القطع الأكثر مبيعاً -->
@@ -372,13 +427,13 @@
                 <div id="stockNotificationsList">لا توجد طلبات انتظار حالياً.</div>
             </div>
 
-            <!-- إدارة نقاط الولاء -->
+            <!-- تعديل النقاط يدوياً للزبون -->
             <div style="background: #fdfbf9; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--light-brown);">
-                <h3><i class="fa-solid fa-star" style="color:var(--gold);"></i> إدارة نقاط الولاء ورتب الزبائن (مداريون VIP)</h3>
+                <h3><i class="fa-solid fa-star" style="color:var(--gold);"></i> تعديل نقاط زبون يدويًا</h3>
                 <form onsubmit="handleAddLoyaltyPoints(event)" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                    <input type="text" id="loyaltyPhoneInput" placeholder="رقم هاتف الزبون" required style="width: 180px;">
+                    <input type="text" id="loyaltyPhoneInput" placeholder="يوزر أو رقم الزبون" required style="width: 180px;">
                     <input type="number" id="loyaltyPointsInput" placeholder="النقاط المضافة" required style="width: 130px;">
-                    <button type="submit" class="btn" style="width: 150px;">إضافة النقاط</button>
+                    <button type="submit" class="btn" style="width: 150px;">حفظ النقاط</button>
                 </form>
             </div>
 
@@ -409,8 +464,8 @@
                 </div>
             </div>
 
-            <!-- إضافة قطعة جديدة -->
-            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة</h3>
+            <!-- إضافة قطعة جديدة بالنقاط -->
+            <h3><i class="fa-solid fa-plus-circle"></i> إضافة قطعة إكسسوار جديدة ونقاطها</h3>
             <form onsubmit="handleAddProduct(event)" style="margin-top: 12px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
                 <div class="form-row">
                     <div class="form-group"><label>اسم القطعة *</label><input type="text" id="pTitle" required></div>
@@ -419,16 +474,21 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>شارة القطعة (Badge)</label>
-                        <select id="pBadge">
-                            <option value="">بدون شارة</option>
-                            <option value="وصل حديثاً 🔥">وصل حديثاً 🔥</option>
-                            <option value="الأكثر مبيعاً 🌟">الأكثر مبيعاً 🌟</option>
-                            <option value="قطعة أخيرة ⚠️">قطعة أخيرة ⚠️</option>
-                            <option value="عرض خاص ⚡">عرض خاص ⚡</option>
-                        </select>
+                        <label>عدد النقاط المكتسبة للقطعة 🌟 *</label>
+                        <input type="number" id="pPoints" placeholder="مثلاً 10 نقاط" required min="0">
                     </div>
-                    <div class="form-group"><label>العدد المتوفر *</label><input type="number" id="pStock" required min="1"></div>
+                    <div class="form-group"><label>العدد المتوفر بالمخزون *</label><input type="number" id="pStock" required min="1"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>شارة القطعة (Badge)</label>
+                    <select id="pBadge">
+                        <option value="">بدون شارة</option>
+                        <option value="وصل حديثاً 🔥">وصل حديثاً 🔥</option>
+                        <option value="الأكثر مبيعاً 🌟">الأكثر مبيعاً 🌟</option>
+                        <option value="قطعة أخيرة ⚠️">قطعة أخيرة ⚠️</option>
+                        <option value="عرض خاص ⚡">عرض خاص ⚡</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -449,7 +509,7 @@
 
             <h3 style="margin-top: 25px;">المخزون الحالي</h3>
             <table class="cart-table" style="margin-top: 10px;">
-                <thead><tr><th>اسم القطعة</th><th>الأقسام</th><th>السعر</th><th>المتبقي</th><th>حذف</th></tr></thead>
+                <thead><tr><th>اسم القطعة</th><th>الأقسام</th><th>السعر</th><th>النقاط</th><th>المتبقي</th><th>حذف</th></tr></thead>
                 <tbody id="adminInventory"></tbody>
             </table>
         </section>
@@ -490,6 +550,7 @@
         let orders = [];
         let stockNotifications = [];
         let communityPosts = [];
+        let rewardRules = [];
         let loyaltyData = {};
         let cart = JSON.parse(localStorage.getItem('madar_cart')) || [];
         let tray = JSON.parse(localStorage.getItem('madar_tray')) || [];
@@ -498,6 +559,7 @@
         let uploadedBase64Image = "";
         let uploadedCatBase64Image = "";
         let uploadedPostBase64Image = "";
+        let uploadedProfileBase64Image = "";
 
         window.checkMandatoryLoginState = function() {
             const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
@@ -538,7 +600,8 @@
             const userSession = {
                 name: name,
                 username: username,
-                isStaff: isStaff
+                isStaff: isStaff,
+                avatar: "https://via.placeholder.com/100"
             };
 
             localStorage.setItem('madar_user_session', JSON.stringify(userSession));
@@ -556,6 +619,7 @@
 
             checkMandatoryLoginState();
             renderCustomerOrders();
+            renderUserProfile();
         };
 
         window.logoutUser = function() {
@@ -609,6 +673,11 @@
             if (file) uploadedPostBase64Image = await compressImage(file, 600);
         });
 
+        document.getElementById('editProfileImgFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) uploadedProfileBase64Image = await compressImage(file, 200);
+        });
+
         onSnapshot(collection(db, "products"), (snapshot) => {
             products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             localStorage.setItem('madar_saved_products', JSON.stringify(products));
@@ -627,6 +696,12 @@
             renderAdminOrders(); updateAnalytics(); renderCustomerOrders();
         });
 
+        onSnapshot(collection(db, "reward_rules"), (snapshot) => {
+            rewardRules = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            rewardRules.sort((a,b) => (a.minPoints || 0) - (b.minPoints || 0));
+            renderAdminRewardRules(); renderUserProfile();
+        });
+
         onSnapshot(collection(db, "stock_notifications"), (snapshot) => {
             stockNotifications = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             renderStockNotifications();
@@ -641,6 +716,7 @@
         onSnapshot(collection(db, "loyalty_points"), (snapshot) => {
             loyaltyData = {};
             snapshot.docs.forEach(d => { loyaltyData[d.id] = d.data().points || 0; });
+            renderUserProfile();
         });
 
         onSnapshot(doc(db, "settings", "store_config"), (docSnap) => {
@@ -670,9 +746,111 @@
             if(pageId === 'cart') renderCart();
             if(pageId === 'tray') renderTray();
             if(pageId === 'tracker') renderCustomerOrders();
+            if(pageId === 'profile') renderUserProfile();
             if(pageId === 'admin-dashboard') {
                 document.getElementById('deliveryInput').value = deliveryFee;
-                renderAdminOrders(); renderAdminInventory(); renderAdminCategories(); updateCategoryDropdown(); updateAnalytics(); renderAdminCommunityPosts();
+                renderAdminOrders(); renderAdminInventory(); renderAdminCategories(); updateCategoryDropdown(); updateAnalytics(); renderAdminCommunityPosts(); renderAdminRewardRules();
+            }
+        };
+
+        /* 👤 إعدادات وعرض ملف الزبون الشخصي والمكافآت */
+        function renderUserProfile() {
+            const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
+            if (!savedUser) return;
+
+            document.getElementById('profileNameView').innerText = savedUser.name;
+            document.getElementById('profileUserView').innerText = "@" + savedUser.username;
+            if (savedUser.avatar) document.getElementById('profileAvatarView').src = savedUser.avatar;
+
+            const userPts = loyaltyData[savedUser.username] || 0;
+            document.getElementById('profilePointsView').innerText = userPts;
+
+            const rewardsContainer = document.getElementById('userUnlockedRewardsList');
+            if(!rewardsContainer) return;
+            rewardsContainer.innerHTML = '';
+
+            if(rewardRules.length === 0) {
+                rewardsContainer.innerHTML = '<p style="color:#777; font-size:13px;">لا توجد قواعد مكافآت مضافة حالياً.</p>';
+                return;
+            }
+
+            rewardRules.forEach(rule => {
+                const isUnlocked = userPts >= rule.minPoints;
+                rewardsContainer.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:8px; border-radius:8px; border:1px solid ${isUnlocked ? 'var(--gold)' : '#ddd'}; background:${isUnlocked ? '#fffde7' : '#fafafa'};">
+                        <div>
+                            <div style="font-weight:bold; font-size:14px; color:${isUnlocked ? 'var(--primary-brown)' : '#666'};">${rule.title}</div>
+                            <div style="font-size:12px; color:#888;">عند الوصول لـ: <b>${rule.minPoints} نقطة</b></div>
+                        </div>
+                        <span style="font-weight:bold; font-size:12px; padding:4px 10px; border-radius:15px; ${isUnlocked ? 'background:var(--gold); color:#000;' : 'background:#eee; color:#888;'}">
+                            ${isUnlocked ? 'مفتوحة ومستحقة 🎉' : 'مقفلة 🔒'}
+                        </span>
+                    </div>
+                `;
+            });
+        }
+
+        window.toggleEditProfileBox = function() {
+            const box = document.getElementById('editProfileBox');
+            const savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
+            if(savedUser) document.getElementById('editProfileNameInput').value = savedUser.name;
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.saveProfileChanges = function() {
+            const newName = document.getElementById('editProfileNameInput').value.trim();
+            let savedUser = JSON.parse(localStorage.getItem('madar_user_session'));
+            if (!savedUser || !newName) return;
+
+            savedUser.name = newName;
+            if (uploadedProfileBase64Image) savedUser.avatar = uploadedProfileBase64Image;
+
+            localStorage.setItem('madar_user_session', JSON.stringify(savedUser));
+            alert("تم حفظ التعديلات بملفك الشخصي بنجاح! ✨");
+            uploadedProfileBase64Image = "";
+            document.getElementById('editProfileBox').style.display = 'none';
+            checkMandatoryLoginState();
+            renderUserProfile();
+        };
+
+        /* 🏆 إدارة قواعد المكافآت من لوحة الأدمن */
+        window.handleAddRewardRule = async function(e) {
+            e.preventDefault();
+            const minPts = parseInt(document.getElementById('rewardMinPointsInput').value);
+            const title = document.getElementById('rewardTitleInput').value.trim();
+
+            if (minPts >= 0 && title) {
+                try {
+                    await addDoc(collection(db, "reward_rules"), { minPoints: minPts, title: title });
+                    alert("تمت إضافة قاعدة المكافأة بنجاح ✨");
+                    e.target.reset();
+                } catch(err){}
+            }
+        };
+
+        function renderAdminRewardRules() {
+            const container = document.getElementById('adminRewardsConfigList');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(rewardRules.length === 0) {
+                container.innerHTML = '<p style="color:#777; font-size:13px;">لا توجد قواعد مكافآت مسجلة.</p>';
+                return;
+            }
+
+            rewardRules.forEach(r => {
+                container.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#fff; border:1px solid #ddd; border-radius:6px; margin-bottom:6px; font-size:13px;">
+                        <div>🌟 عند وصول <b>${r.minPoints} نقطة</b> 👈 المكافأة: <b>${r.title}</b></div>
+                        <button onclick="deleteRewardRule('${r.id}')" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteRewardRule = async function(id) {
+            if(confirm("حذف هذه المكافأة؟")) {
+                try { await deleteDoc(doc(db, "reward_rules", id)); } catch(e){}
             }
         };
 
@@ -749,6 +927,7 @@
                                 <div class="tags-box">${tagsHTML}</div>
                                 <div class="product-title">${p.name}</div>
                                 <div class="product-price">${Number(p.price).toLocaleString()} د.ع</div>
+                                <div class="points-badge-tag">+${p.points || 0} نقطة VIP 🌟</div>
                             </div>
                             <div>
                                 <div class="stock-tag ${isOut ? 'out-stock' : 'in-stock'}">${isOut ? 'نفذت الكمية' : `المتبقي: ${p.stock}`}</div>
@@ -933,7 +1112,6 @@
 
         window.deleteStockNotification = async function(id) { try { await deleteDoc(doc(db, "stock_notifications", id)); } catch(e){} };
 
-        /* 📦 عرض طلبات الزبون التلقائية بناءً على يوزه الموفر بدخول الموقع */
         function renderCustomerOrders() {
             const container = document.getElementById('myOrdersListContainer');
             if(!container) return;
@@ -986,7 +1164,10 @@
             const pts = parseInt(document.getElementById('loyaltyPointsInput').value);
             if(phone && pts) {
                 const current = loyaltyData[phone] || 0;
-                try { await setDoc(doc(db, "loyalty_points", phone), { points: current + pts }, { merge: true }); alert(`تمت إضافة ${pts} نقطة للزبون! إجمالي نقاطه: ${current + pts}`); } catch(e){}
+                try { 
+                    await setDoc(doc(db, "loyalty_points", phone), { points: current + pts }, { merge: true }); 
+                    alert(`تمت تحديث نقاط الزبون! النقاط الحالية: ${current + pts}`); 
+                } catch(e){}
                 e.target.reset();
             }
         };
@@ -1041,6 +1222,7 @@
                 name: document.getElementById('pTitle').value,
                 category: selectedCats.length > 0 ? selectedCats : ["عام"],
                 price: parseFloat(document.getElementById('pPrice').value),
+                points: parseInt(document.getElementById('pPoints').value) || 0,
                 stock: parseInt(document.getElementById('pStock').value),
                 badge: document.getElementById('pBadge').value,
                 image: uploadedBase64Image
@@ -1049,26 +1231,43 @@
             e.target.reset(); uploadedBase64Image = ""; document.getElementById('imgPreviewBox').style.display = 'none';
         };
 
+        /* 📦 معالجة الطلب وإضافة النقاط وحساب الجوائز المستحقة */
         window.handleCheckout = async function(e) {
             e.preventDefault();
             if(cart.length === 0) { alert("السلة فارغة!"); return; }
 
             const savedUser = JSON.parse(localStorage.getItem('madar_user_session')) || {};
+            const userKey = savedUser.username || document.getElementById('custInsta').value.trim();
             const giftMsg = document.getElementById('giftMessageInput').value.trim();
+
+            let pointsEarnedInOrder = 0;
+            const orderItems = cart.map(item => {
+                const p = products.find(x => String(x.id) === String(item.id));
+                const itemPoints = (p && p.points) ? (p.points * item.qty) : 0;
+                pointsEarnedInOrder += itemPoints;
+                return { name: p ? p.name : 'منتج', price: p ? p.price : 0, qty: item.qty, points: itemPoints };
+            });
+
+            const currentExistingPts = loyaltyData[userKey] || 0;
+            const updatedTotalUserPts = currentExistingPts + pointsEarnedInOrder;
+
+            // تحديث نقاط الزبون بـ Firestore
+            try {
+                await setDoc(doc(db, "loyalty_points", userKey), { points: updatedTotalUserPts }, { merge: true });
+            } catch(e){}
 
             const orderData = {
                 custName: document.getElementById('custName').value || savedUser.name || 'زبون',
-                custInsta: document.getElementById('custInsta').value || savedUser.username || 'غير محدد',
+                custInsta: userKey,
                 custPhone1: document.getElementById('custPhone1').value,
                 custPhone2: document.getElementById('custPhone2').value || 'لا يوجد',
                 custGov: document.getElementById('custGov').value,
                 custAddress: document.getElementById('custAddress').value,
                 custNotes: document.getElementById('custNotes').value || 'لا يوجد',
                 giftMessage: giftMsg || '',
-                items: cart.map(item => {
-                    const p = products.find(x => String(x.id) === String(item.id));
-                    return { name: p ? p.name : 'منتج', price: p ? p.price : 0, qty: item.qty };
-                }),
+                items: orderItems,
+                pointsEarned: pointsEarnedInOrder,
+                userTotalPoints: updatedTotalUserPts,
                 subtotal: cart.reduce((sum, item) => {
                     const p = products.find(x => String(x.id) === String(item.id));
                     return sum + ((p ? p.price : 0) * item.qty);
@@ -1118,6 +1317,7 @@
                         </div>
                         <div style="font-size:13px; line-height:1.6; margin-bottom:8px;">
                             📞 <b>الهاتف:</b> ${ord.custPhone1} | 📍 <b>المحافظة:</b> ${ord.custGov} - ${ord.custAddress}<br>
+                            🌟 <b>نقاط هذا الطلب:</b> ${ord.pointsEarned || 0} | 🏆 <b>إجمالي نقاط الزبون:</b> ${ord.userTotalPoints || 0}<br>
                             ${ord.giftMessage ? `🎁 <b>رسالة الهدايا/QR:</b> ${ord.giftMessage}<br>` : ''}
                             <div style="background:#f9f9f9; padding:6px; border-radius:5px; margin:5px 0;"><b>القطع:</b><br>${itemsFormatted}</div>
                             💳 <b>المبلغ:</b> <span style="color:var(--primary-brown); font-weight:bold;">${Number(ord.grandTotal || 0).toLocaleString()} د.ع</span>
@@ -1138,6 +1338,7 @@
             });
         }
 
+        /* 💡 طباعة الوصل المحدث الشامل للنقاط والمكافآت */
         window.printInvoice = function(orderId) {
             const ord = orders.find(o => o.id === orderId);
             if(!ord) return;
@@ -1150,6 +1351,14 @@
                 qrHTML = `<div style="text-align:center; margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;"><p style="font-size:11px; margin-bottom:4px;">امسح الرمز لسماع البصمة / الرسالة 🎁</p><img src="${qrUrl}" style="width:100px; height:100px;"></div>`;
             }
 
+            // فحص الجوائز المفتوحة المتاحة للزبون
+            const totalPts = ord.userTotalPoints || 0;
+            const unlockedRewards = rewardRules.filter(r => totalPts >= r.minPoints);
+            let rewardsPrintHTML = '';
+            if(unlockedRewards.length > 0) {
+                rewardsPrintHTML = `<div style="background:#fff8e1; border:1px solid #FFC107; padding:8px; border-radius:6px; margin:10px 0; font-size:11px;"><b>🎁 الجوائز المستحقة للزبون:</b><br>${unlockedRewards.map(r => `• ${r.title}`).join('<br>')}</div>`;
+            }
+
             const invoiceHTML = `
                 <!DOCTYPE html>
                 <html lang="ar" dir="rtl">
@@ -1158,7 +1367,7 @@
                     <title>وصل طلبية - مدار</title>
                     <style>
                         body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 15px; background: #fff; color: #000; direction: rtl; text-align: right; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 12px; }
                         th, td { border: 1px solid #000; padding: 6px; }
                         th { background: #f0ebe6; }
                     </style>
@@ -1173,7 +1382,8 @@
                             <b>اسم الزبون:</b> ${ord.custName} (${ord.custInsta})<br>
                             <b>رقم الهاتف:</b> ${ord.custPhone1}<br>
                             <b>العنوان:</b> ${ord.custGov} - ${ord.custAddress}<br>
-                            <b>ملاحظات:</b> ${ord.custNotes || 'لا يوجد'}
+                            <b>ملاحظات:</b> ${ord.custNotes || 'لا يوجد'}<br>
+                            🌟 <b>نقاط هذا الطلب:</b> +${ord.pointsEarned || 0} | 🏆 <b>إجمالي نقاط الزبون:</b> ${totalPts}
                         </div>
                         <table>
                             <thead><tr><th>القطعة</th><th>العدد</th><th>السعر</th></tr></thead>
@@ -1182,6 +1392,7 @@
                         <div style="font-size:14px; font-weight:bold; text-align:left; color:#4A3525;">
                             المجموع الكلي مع التوصيل: ${Number(ord.grandTotal).toLocaleString()} د.ع
                         </div>
+                        ${rewardsPrintHTML}
                         ${qrHTML}
                     </div>
                 </body>
@@ -1287,7 +1498,7 @@
             const tbody = document.getElementById('adminInventory'); tbody.innerHTML = '';
             products.forEach(p => {
                 const catStr = Array.isArray(p.category) ? p.category.join('، ') : (p.category || 'عام');
-                tbody.innerHTML += `<tr><td>${p.name}</td><td>${catStr}</td><td>${Number(p.price).toLocaleString()} د.ع</td><td>${p.stock}</td><td><button onclick="deleteProduct('${p.id}')" style="color:red; border:none; background:none; cursor:pointer;">حذف</button></td></tr>`;
+                tbody.innerHTML += `<tr><td>${p.name}</td><td>${catStr}</td><td>${Number(p.price).toLocaleString()} د.ع</td><td><b>${p.points || 0}</b></td><td>${p.stock}</td><td><button onclick="deleteProduct('${p.id}')" style="color:red; border:none; background:none; cursor:pointer;">حذف</button></td></tr>`;
             });
         }
     </script>
